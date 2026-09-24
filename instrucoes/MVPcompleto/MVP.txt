@@ -1,0 +1,24 @@
+QREPARO - RESUMO DO MVP
+Revisão 2 - 24/09/2026
+
+SOLICITANTE
+Lê o QR Code ou digita o código da etiqueta. Equipamento ativo e laboratório são preenchidos automaticamente. Informa título obrigatório (até 35 caracteres), descrição obrigatória (até 250), de 1 a 3 tags e até duas fotos opcionais. Envia e recebe confirmação simples, encerrando a interação. Sem acompanhamento, lista pública, conta de aluno, contato ou gravidade percebida.
+
+FOTOS E ENVIOS
+PNG/JPEG/HEIC, até 10 MB por foto e 25 MB na requisição; armazenamento WebP estático, sem metadados, buscando 1 MB sem prejudicar clareza. Sem limite de dimensões como regra de produto. Cookie aleatório de 30 dias é necessário; sem cookie, orientar ativação. Até 3 envios por navegador e 5 por equipamento em janela fixa de 15 minutos alinhada ao relógio. O terceiro/quinto envio é aceito e inicia bloqueio de 15 minutos, independente da virada da janela. Recusas não renovam o bloqueio. Chave de reenvio de 24 horas evita duplicação acidental; relatos independentes continuam separados.
+
+TÉCNICO
+Faz login, consulta chamados e fotos, cadastra equipamentos e gera etiquetas. Faz triagem, atribui responsável, altera estados, resolve chamados do mesmo equipamento individualmente ou em lote e consulta indicadores. Estado inicial Aberto e prioridade Média. Pendência/cancelamento exigem motivo; resolução exige solução. Se qualquer selecionado mudar antes da confirmação do lote, nenhum é resolvido e uma nova conferência é exigida. Sem fusão.
+
+ADMINISTRADOR E GESTOR
+Administrador gerencia contas, permissões, laboratórios, locais e tags; cadastra equipamentos e gera etiquetas. Precisa também do perfil técnico para acessar chamados/fotos/autoria e técnico ou gestor para indicadores. Gestor consulta apenas agregados. Perfis podem ser acumulados. Sem recuperação de acesso.
+
+RETENÇÃO E ABUSO
+Rotina diária remove conteúdo de resolvidos após 60 dias e cancelados sem abuso após 14 dias, preservando equipamento, laboratório, tags, datas, estado final e autoria estruturada. O histórico com autoria não é totalmente anônimo. Maliciosos são excluídos imediatamente, inclusive histórico/autoria. Técnico pode restringir navegador por 1 a 168 horas inteiras e remover a restrição antes do prazo; manter apenas navegador, prazo, técnico e justificativa breve, por até 30 dias. Não implementar recuperação avançada nem fila de novas tentativas.
+
+CORREÇÃO E INDICADORES
+Encerramento incorreto pode ser desfeito antes da remoção do conteúdo: suspende retenção; novo encerramento inicia novo prazo. Registro já reduzido não é reativado. Falha recorrente gera novo relato. Indicadores: quantidade de relatos válidos, tempo até primeiro atendimento (primeira entrada em Em atendimento ou resolução direta) e tempo total até resolução vigente, incluindo pendências; manter a primeira data de atendimento após correção. Cancelamentos não entram na demanda válida.
+
+PILOTO
+Simulado, com Django, PostgreSQL e fotos privadas. Sem integração institucional, autenticação de alunos, confirmação do solicitante, mapa de incidência ou cálculo adicional de recorrência. A equipe verifica as metas de qualidade. Os detalhes estão em TELAS_E_FLUXO.md e ARQUITETURA.md desta pasta; a sequência comum está em ../ORDEM_DE_DESENVOLVIMENTO.md.
+

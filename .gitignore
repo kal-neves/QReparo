@@ -15,4 +15,4 @@ midia_privada/
 staticfiles/
 *.sqlite3
 
-INSTRUCTIONS.md
+guidelines/

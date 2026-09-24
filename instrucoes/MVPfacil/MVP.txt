@@ -1,0 +1,23 @@
+Aluno
+
+Escaneia o QR Code.
+Abre o formulário com dispositivo e laboratório já preenchidos.
+Seleciona o problema em uma lista.
+Se selecionar “Outro problema”, descreve brevemente a falha.
+Envia e encerra a interação.
+
+Não há link de acompanhamento, fotos, listagem pública, pesquisa de duplicados, conta de aluno nem dados pessoais armazenados. A matrícula e senha podem ser a futura forma de identificar o aluno, mas não precisam fazer parte do MVP.
+
+Técnico
+
+Faz login.
+Vê uma lista de dispositivos que possuem chamados ativos.
+Abre um dispositivo e vê sua descrição, localização e os relatos ativos associados.
+Vai ao laboratório, faz a correção e seleciona quais relatos daquele dispositivo foram resolvidos.
+Marca-os como resolvidos em lote.
+O dispositivo sai da lista quando não tiver mais relatos ativos; os dados dos relatos resolvidos são apagados.
+
+
+Ajustes:
+Mesmo com o campo “Outro problema”, deixe sempre uma descrição opcional. Um relato “sem internet” pode precisar de algo como “a rede cai a cada cinco minutos”. Se quiser máxima simplicidade, torne a descrição obrigatória apenas para “Outro problema”.
+Quando um técnico marcar os relatos como resolvidos, apague o conteúdo livre do relato, mas preserve uma contagem técnica mínima por dispositivo e tipo de problema, sem identificação pessoal. Por exemplo: Lab 3 / PC-12 / sem internet / resolvido em 22/09. Isso permite demonstrar recorrência no painel sem manter dados do aluno.

@@ -1,156 +1,78 @@
-from django.db import models
-from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db import models, transaction
+from django.db.models import Q
 from django.utils import timezone
 
 
-class Chamado(models.Model):
-    """
-    Representa uma solicitação de reparo ou manutenção aberta por um usuário
-    (aluno, professor ou técnico) para um equipamento acadêmico específico.
-    """
+class ConflitoEstado(ValidationError):
+    pass
 
-    # Opções de Status
-    STATUS_ABERTO = 'ABERTO'
-    STATUS_EM_ATENDIMENTO = 'EM_ATENDIMENTO'
-    STATUS_RESOLVIDO = 'RESOLVIDO'
-    STATUS_CANCELADO = 'CANCELADO'
 
-    STATUS_CHOICES = [
-        (STATUS_ABERTO, 'Aberto'),
-        (STATUS_EM_ATENDIMENTO, 'Em Atendimento'),
-        (STATUS_RESOLVIDO, 'Resolvido'),
-        (STATUS_CANCELADO, 'Cancelado'),
-    ]
-
-    # Opções de Prioridade
-    PRIORIDADE_BAIXA = 'BAIXA'
-    PRIORIDADE_MEDIA = 'MEDIA'
-    PRIORIDADE_ALTA = 'ALTA'
-    PRIORIDADE_URGENTE = 'URGENTE'
-
-    PRIORIDADE_CHOICES = [
-        (PRIORIDADE_BAIXA, 'Baixa'),
-        (PRIORIDADE_MEDIA, 'Média'),
-        (PRIORIDADE_ALTA, 'Alta'),
-        (PRIORIDADE_URGENTE, 'Urgente'),
-    ]
-
-    # Informações do Chamado
-    titulo = models.CharField(
-        max_length=150,
-        verbose_name='Título do Chamado',
-        help_text='Resumo do problema (ex: Monitor piscando, Projetor sem imagem)'
-    )
-
-    descricao = models.TextField(
-        verbose_name='Descrição do Problema',
-        help_text='Explique detalhadamente o sintoma, como reproduzir e impacto nas aulas/pesquisa'
-    )
-
-    # Relacionamento com Equipamento
-    equipamento = models.ForeignKey(
-        'equipamentos.Equipamento',
-        on_delete=models.CASCADE,
-        related_name='chamados',
-        verbose_name='Equipamento',
-        help_text='Equipamento acadêmico que apresentou o defeito'
-    )
-
-    # Atores do processo
-    solicitante = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name='chamados_solicitados',
-        verbose_name='Solicitante',
-        help_text='Usuário institucional que abriu a solicitação'
-    )
-
-    tecnico_responsavel = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='chamados_atribuidos',
-        verbose_name='Técnico Responsável',
-        help_text='Técnico do laboratório/TI encarregado da manutenção'
-    )
-
-    # Classificação
-    prioridade = models.CharField(
-        max_length=20,
-        choices=PRIORIDADE_CHOICES,
-        default=PRIORIDADE_MEDIA,
-        verbose_name='Prioridade'
-    )
-
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default=STATUS_ABERTO,
-        verbose_name='Status do Chamado'
-    )
-
-    # Fechamento e Laudo Técnico
-    laudo_tecnico = models.TextField(
-        blank=True,
-        verbose_name='Laudo Técnico / Diagnóstico e Solução',
-        help_text='Relatório emitido pelo técnico explicando peças trocadas, causas e testes realizados'
-    )
-
-    # Linha do Tempo
-    data_abertura = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Data de Abertura'
-    )
-
-    data_atualizacao = models.DateTimeField(
-        auto_now=True,
-        verbose_name='Última Atualização'
-    )
-
-    data_conclusao = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name='Data de Conclusão'
-    )
+class Tag(models.Model):
+    nome = models.CharField(max_length=100, unique=True)
+    outro = models.BooleanField(default=False, help_text='Exige descrição no envio.')
 
     class Meta:
-        verbose_name = 'Chamado'
-        verbose_name_plural = 'Chamados'
-        ordering = ['-data_abertura']
+        ordering = ['outro', 'nome']
+        constraints = [models.UniqueConstraint(fields=['outro'], condition=Q(outro=True), name='uma_tag_outro')]
 
     def __str__(self):
-        return f"#{self.id} - {self.titulo} [{self.get_status_display()}]"
+        return self.nome
+
+
+class Chamado(models.Model):
+    ABERTO = 'ABERTO'
+    RESOLVIDO = 'RESOLVIDO'
+    equipamento = models.ForeignKey('equipamentos.Equipamento', on_delete=models.PROTECT, related_name='chamados')
+    laboratorio = models.ForeignKey('equipamentos.Laboratorio', on_delete=models.PROTECT)
+    problema = models.ForeignKey(Tag, on_delete=models.PROTECT)
+    descricao = models.CharField(max_length=250, blank=True)
+    status = models.CharField(max_length=10, choices=[(ABERTO, 'Aberto'), (RESOLVIDO, 'Resolvido')], default=ABERTO)
+    data_abertura = models.DateTimeField(auto_now_add=True)
+    data_conclusao = models.DateTimeField(null=True, blank=True)
+    conteudo_removido = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-data_abertura', '-pk']
+        constraints = [models.CheckConstraint(
+            condition=(Q(status='ABERTO', data_conclusao__isnull=True, conteudo_removido=False)
+                       | Q(status='RESOLVIDO', data_conclusao__isnull=False, conteudo_removido=True, descricao='')),
+            name='chamado_ciclo_e_descarte',
+        )]
+
+    def clean(self):
+        if self.status == self.ABERTO and self.problema_id and self.problema.outro and not self.descricao.strip():
+            raise ValidationError({'descricao': 'Descreva o problema para continuar.'})
 
     def save(self, *args, **kwargs):
-        """
-        Regra de negócio automática:
-        1. Se o status for RESOLVIDO e data_conclusao não estiver definida, salva a data atual.
-        2. Atualiza de forma sincronizada o status operacional do equipamento:
-           - Se chamado em atendimento ou urgente aberto, coloca o equipamento em MANUTENCAO.
-           - Se chamado for resolvido, checa se não restam outros chamados abertos e restaura para OPERACIONAL.
-        """
-        if self.status == self.STATUS_RESOLVIDO and not self.data_conclusao:
-            self.data_conclusao = timezone.now()
-        elif self.status != self.STATUS_RESOLVIDO and self.data_conclusao:
-            # Caso reabram o chamado
-            self.data_conclusao = None
+        # Adaptação da transição individual existente. Lotes/conferência ficam
+        # para outro commit; não usar QuerySet.update para atendimento.
+        using = kwargs.get('using') or self._state.db or 'default'
+        with transaction.atomic(using=using):
+            if self.pk:
+                anterior = type(self).objects.using(using).select_for_update().get(pk=self.pk)
+                if anterior.status == self.RESOLVIDO:
+                    raise ConflitoEstado('Relatos resolvidos não podem ser alterados ou reabertos.')
+                if self.equipamento_id != anterior.equipamento_id or self.problema_id != anterior.problema_id:
+                    raise ValidationError('Não é permitido trocar equipamento ou problema do relato.')
+                self.laboratorio_id = anterior.laboratorio_id
+            else:
+                from equipamentos.models import Equipamento
+                equipamento = Equipamento.objects.using(using).select_for_update().select_related('local').get(pk=self.equipamento_id)
+                if not equipamento.ativo or self.status != self.ABERTO:
+                    raise ValidationError('O relato deve ser Aberto e o equipamento deve estar ativo.')
+                self.laboratorio_id = equipamento.local.laboratorio_id
+            if self.status == self.RESOLVIDO:
+                self.descricao = ''
+                self.data_conclusao = timezone.now()
+                self.conteudo_removido = True
+                if kwargs.get('update_fields') is not None:
+                    kwargs['update_fields'] = set(kwargs['update_fields']) | {
+                        'status', 'descricao', 'data_conclusao', 'conteudo_removido',
+                    }
+            self.full_clean()
+            super().save(*args, **kwargs)
 
-        super().save(*args, **kwargs)
-
-        # Atualização inteligente do Equipamento
-        equipamento = self.equipamento
-        if self.status in [self.STATUS_ABERTO, self.STATUS_EM_ATENDIMENTO]:
-            if self.prioridade == self.PRIORIDADE_URGENTE:
-                equipamento.status = 'INOPERANTE'
-            elif equipamento.status == 'OPERACIONAL':
-                equipamento.status = 'MANUTENCAO'
-            equipamento.save(update_fields=['status'])
-        elif self.status == self.STATUS_RESOLVIDO:
-            # Se não houver outros chamados pendentes para este equipamento, torna-o operacional
-            outros_abertos = equipamento.chamados.filter(
-                status__in=[self.STATUS_ABERTO, self.STATUS_EM_ATENDIMENTO]
-            ).exclude(id=self.id).exists()
-            if not outros_abertos and equipamento.status != 'OPERACIONAL':
-                equipamento.status = 'OPERACIONAL'
-                equipamento.save(update_fields=['status'])
+    def __str__(self):
+        # Não incluir texto livre em representações usadas por logs/Admin.
+        return f'Relato #{self.pk} — {self.status}'

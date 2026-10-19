@@ -1,5 +1,5 @@
 QREPARO - RESUMO DO MVP
-Revisão 2 - 24/09/2026
+Evolução após a entrega do MVP fácil: etapas 11 a 24 de ../ORDEM_DE_DESENVOLVIMENTO.md.
 
 SOLICITANTE
 Lê o QR Code ou digita o código da etiqueta. Equipamento ativo e laboratório são preenchidos automaticamente. Informa título obrigatório (até 35 caracteres), descrição obrigatória (até 250), de 1 a 3 tags e até duas fotos opcionais. Envia e recebe confirmação simples, encerrando a interação. Sem acompanhamento, lista pública, conta de aluno, contato ou gravidade percebida.
@@ -21,4 +21,3 @@ Encerramento incorreto pode ser desfeito antes da remoção do conteúdo: suspen
 
 PILOTO
 Simulado, com Django, PostgreSQL e fotos privadas. Sem integração institucional, autenticação de alunos, confirmação do solicitante, mapa de incidência ou cálculo adicional de recorrência. A equipe verifica as metas de qualidade. Os detalhes estão em TELAS_E_FLUXO.md e ARQUITETURA.md desta pasta; a sequência comum está em ../ORDEM_DE_DESENVOLVIMENTO.md.
-

@@ -91,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'America/Bahia'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -101,39 +101,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MIDIA_PRIVADA = Path(os.environ.get('MIDIA_PRIVADA', BASE_DIR / 'midia_privada'))
 
-FORMATOS_FOTO = ('png', 'jpg', 'jpeg', 'heic')
-LIMITE_FOTOS = 2
-FOTO_MAX_BYTES = 10_000_000
-FOTO_ALVO_BYTES = 1_000_000
-LIMITE_NAVEGADOR = 3
-LIMITE_EQUIPAMENTO = 5
-JANELA_MIN = 15
-BLOQUEIO_MIN = 15
-ABUSO_HORAS = 24
-COOKIE_DIAS = 30
-RETENCAO_AUX_DIAS = 30
-RETENCAO_CANCELADO_DIAS = 14
-RETENCAO_RESOLVIDO_MESES = 2
-MENSAGEM_LIMITE = 'Muitos envios em pouco tempo. Tente novamente em alguns minutos.'
-PRIORIDADES = ('Baixa', 'Média', 'Alta', 'Crítica')
-TAGS_INICIAIS = (
-    'não liga',
-    'sem internet',
-    'lentidão',
-    'periférico',
-    'software',
-    'monitor',
-    'teclado/mouse',
-    'áudio',
-    'impressora',
-    'outro',
-)
-
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SECURE_REFERRER_POLICY = 'no-referrer'

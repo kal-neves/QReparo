@@ -1,23 +1,31 @@
-Aluno
+QREPARO - MVP FÁCIL
 
-Escaneia o QR Code.
-Abre o formulário com dispositivo e laboratório já preenchidos.
-Seleciona o problema em uma lista.
-Se selecionar “Outro problema”, descreve brevemente a falha.
-Envia e encerra a interação.
+Primeira entrega: etapas 1 a 10 de ../ORDEM_DE_DESENVOLVIMENTO.md.
+Detalhes: TELAS_E_FLUXO.md e ARQUITETURA.md desta pasta.
 
-Não há link de acompanhamento, fotos, listagem pública, pesquisa de duplicados, conta de aluno nem dados pessoais armazenados. A matrícula e senha podem ser a futura forma de identificar o aluno, mas não precisam fazer parte do MVP.
+ALUNO
 
-Técnico
+Escaneia o QR Code e confere o equipamento e o laboratório preenchidos pelo servidor.
+Seleciona exatamente um problema da lista.
+Pode escrever uma descrição de até 250 caracteres para qualquer problema. A descrição é obrigatória somente quando selecionar “Outro problema”.
+Envia e recebe confirmação simples, encerrando a interação.
 
-Faz login.
-Vê uma lista de dispositivos que possuem chamados ativos.
-Abre um dispositivo e vê sua descrição, localização e os relatos ativos associados.
-Vai ao laboratório, faz a correção e seleciona quais relatos daquele dispositivo foram resolvidos.
-Marca-os como resolvidos em lote.
-O dispositivo sai da lista quando não tiver mais relatos ativos; os dados dos relatos resolvidos são apagados.
+Não há título, fotos, link de acompanhamento, listagem pública, pesquisa de duplicados ou conta de aluno. Não solicitar nome, contato, matrícula ou outros dados pessoais; orientar a não incluí-los na descrição e não copiar o relato para logs.
 
+TÉCNICO
 
-Ajustes:
-Mesmo com o campo “Outro problema”, deixe sempre uma descrição opcional. Um relato “sem internet” pode precisar de algo como “a rede cai a cada cinco minutos”. Se quiser máxima simplicidade, torne a descrição obrigatória apenas para “Outro problema”.
-Quando um técnico marcar os relatos como resolvidos, apague o conteúdo livre do relato, mas preserve uma contagem técnica mínima por dispositivo e tipo de problema, sem identificação pessoal. Por exemplo: Lab 3 / PC-12 / sem internet / resolvido em 22/09. Isso permite demonstrar recorrência no painel sem manter dados do aluno.
+Faz login com uma conta preparada pela equipe.
+Vê os equipamentos com relatos Abertos e consulta sua descrição, localização e relatos ativos.
+Após a correção, seleciona e confere quais relatos do mesmo equipamento foram resolvidos.
+Confirma a resolução individual ou em lote, sem exigir solução escrita.
+O servidor revalida autorização, equipamento e estado Aberto em transação. Se algum selecionado não atender às condições, nenhum é resolvido e uma nova conferência é exigida.
+O equipamento sai do painel somente quando não tiver mais relatos Abertos; seu cadastro é preservado.
+
+DADOS E CONTAGEM
+
+Os estados são Aberto e Resolvido. Ao resolver, apagar imediatamente a descrição na mesma transação e preservar somente equipamento, laboratório no envio, tipo de problema, datas e estado final, sem identificação do aluno nem autoria pessoal do atendimento.
+Manter contagem técnica por equipamento e tipo de problema. Não guardar cópias do texto em histórico, logs ou auditoria do Admin. Registro reduzido não é reativado; falha que retorna gera novo relato.
+
+EVOLUÇÃO
+
+Fotos, título, múltiplas tags, demais estados, prioridades, atribuição, autoria, perfis adicionais, controle de frequência, reenvios e retenção de 60/14 dias pertencem ao MVP completo. Registros da fase fácil mantêm sua política de descarte após a evolução.

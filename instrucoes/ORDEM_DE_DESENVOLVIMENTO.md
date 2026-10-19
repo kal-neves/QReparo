@@ -167,7 +167,7 @@ Adicionar paginação, filtros por laboratório, equipamento, tags, estado e res
 
 ### 23. Verificar a entrega completa
 
-Testar migração, matriz de acesso, campos, reenvios, limites simultâneos, fotos privadas, estados, auditoria, conflito no lote, restrição e retenção. Usar PostgreSQL nos testes transacionais. Verificar celular, teclado, mensagens e as metas de desempenho, usabilidade e compatibilidade dos documentos do projeto.
+Testar migração, matriz de acesso, campos, reenvios, limites simultâneos, fotos privadas, estados, auditoria, conflito no lote, restrição e retenção. Usar PostgreSQL nos testes transacionais. Verificar celular, teclado, mensagens e as [metas de qualidade](README.md#metas-de-qualidade).
 
 **Pronto quando:** o fluxo completo passa nas verificações e dados da fase fácil continuam corretos. Corrigir falhas antes de declarar o segundo marco entregue.
 

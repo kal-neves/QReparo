@@ -1,0 +1,13 @@
+<article class="qr-card qr-report">
+  <div class="qr-report-top">
+    <label class="qr-check">
+      <input class="form-check-input" type="checkbox" name="selecionados" value="{{ report_id }}" data-select-item{% if selected %} checked{% endif %}>
+      <span class="visually-hidden">Selecionar relato {{ report_id }}</span>
+    </label>
+    <div class="qr-report-name"><span class="qr-muted">Relato {{ report_id }}</span><h3>{{ problem }}</h3></div>
+    <div><span class="qr-meta-label">Aberto em</span><span>{{ opened_at }}</span></div>
+    <div><span class="qr-meta-label">Laboratório no envio</span><span>{{ laboratory }}</span></div>
+    {% include "ui/badge.html" with label="Aberto" only %}
+  </div>
+  <div class="qr-report-description"><span class="qr-meta-label">Descrição</span><p>{{ description|default:"Sem descrição adicional"|linebreaksbr }}</p></div>
+</article>

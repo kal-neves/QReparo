@@ -1,0 +1,5 @@
+{% if href %}
+<a class="btn btn-{{ variant|default:'primary' }}{% if extra_class %} {{ extra_class }}{% endif %}" href="{{ href }}">{% if icon %}{% include "ui/icon.html" with name=icon only %}{% endif %}{{ label }}</a>
+{% else %}
+<button class="btn btn-{{ variant|default:'primary' }}{% if extra_class %} {{ extra_class }}{% endif %}" type="{{ type|default:'button' }}"{% if disabled %} disabled{% endif %}>{% if icon %}{% include "ui/icon.html" with name=icon only %}{% endif %}<span>{{ label }}</span></button>
+{% endif %}

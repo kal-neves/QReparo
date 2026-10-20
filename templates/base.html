@@ -1,0 +1,24 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ titulo|default:"QReparo" }}{% endblock %} · QReparo</title>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'js/ui.js' %}" defer></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% if internal or desktop %}qr-desktop{% else %}qr-public{% endif %}{% endblock %}">
+  <a class="qr-skip" href="#conteudo">Ir para o conteúdo</a>
+  {% block header %}{% include "ui/header.html" %}{% endblock %}
+  <main id="conteudo" class="qr-main {% block main_class %}qr-width-work{% endblock %}" tabindex="-1">
+    {% block heading %}{% include "ui/page_heading.html" with title=titulo %}{% endblock %}
+    {% include "ui/messages.html" %}
+    {% block content %}{% endblock %}
+  </main>
+  {% include "ui/footer.html" %}
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

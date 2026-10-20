@@ -103,6 +103,71 @@ Não há pasta de fotos privadas ou comando diário de retenção necessários n
 
 ## Verificação e evolução
 
+### Base compartilhada da interface
+
+As páginas devem estender `templates/base.html` e reutilizar os includes de
+`templates/ui/`. O tema está em `static/css/app.css`; as melhorias opcionais de
+interação ficam em `static/js/ui.js`. O Bootstrap 5.3.8 foi incorporado em
+`static/vendor/bootstrap/`, com sua licença, conforme a
+[distribuição oficial](https://getbootstrap.com/docs/5.3/getting-started/download/).
+Não depende de CDN durante o uso. Não há plugins JavaScript do Bootstrap nesta
+etapa: os componentes previstos não precisam de modal, dropdown ou carrossel.
+
+Os SVGs originais de `assets/` são servidos pelo namespace estático `brand/`, sem
+cópias da marca. Use as variáveis de cor, espaçamento e raio do tema para manter
+consistência entre telas. Os limites de conteúdo são `qr-width-form` (640 px),
+`qr-width-small` (480 px) e `qr-width-work` (1140 px).
+
+| Include em `templates/ui/` | Uso e parâmetros principais |
+| --- | --- |
+| `header.html`, `footer.html` | Estrutura comum; `internal`, `active_nav` (`painel`/`contagem`) e `logout_url`. Links internos respeitam as permissões da conta. |
+| `page_heading.html` | `title`, `subtitle` e `icon`; título principal único e ícone decorativo. |
+| `button.html` | `label`, `icon`, `variant` (`primary`, `outline-primary`, `link`); `href` para navegação ou `type` para botão. `disabled` aplica-se a botões. |
+| `alert.html`, `messages.html` | Mensagens persistentes; `kind`, `title`, `text`, `icon`. O segundo traduz os níveis de mensagens do Django. |
+| `field.html`, `error_summary.html` | `field` é um BoundField Django; `form` alimenta o resumo. `counter=True` habilita contador em campos com `maxlength`. |
+| `equipment_card.html` | `identification`, `description`, `laboratory`, `location`, `inactive`; `compact=True` dispõe os dados horizontalmente no desktop. |
+| `report_card.html` | `report_id`, `problem`, `opened_at`, `laboratory`, `description`, `selected`; escapa texto livre e preserva quebras de linha. |
+| `selection_bar.html` | Barra com contador e ação de conferência; usar dentro de formulário com `data-selection-group`. |
+| `table.html` | `caption`, `columns`, `rows` (cada item contém `cells`); com `actions=True`, cada linha pode fornecer `url` e `action_label`. |
+| `badge.html`, `empty_state.html` | Badge: `label`, `kind`. Estado vazio: `title`, `text`, `icon`, link opcional por `href`/`link_label`. |
+| `icon.html` | Ícones de traço decorativos por `name`; toda ação deve manter seu texto acessível. |
+
+Exemplo de composição, sem criar outra estrutura de página:
+
+```django
+{% extends 'base.html' %}
+{% block main_class %}qr-width-form{% endblock %}
+{% block content %}
+  <form class="qr-card" method="post" data-submit-lock="Enviando…">
+    {% csrf_token %}
+    {% include 'ui/error_summary.html' with form=form only %}
+    {% include 'ui/field.html' with field=form.problema only %}
+    {% include 'ui/field.html' with field=form.descricao counter=True only %}
+    {% include 'ui/button.html' with label='Enviar relato' type='submit' icon='send' only %}
+  </form>
+{% endblock %}
+```
+
+O filtro `ui_control` aplica as classes Bootstrap e associa ajuda/erros aos campos
+sem modificar os widgets originais. Os formulários fornecem labels sem o sufixo
+“obrigatório/opcional”; o include adiciona esse texto conforme `field.required`.
+A obrigatoriedade condicional continua sob responsabilidade do formulário da tela.
+
+`data-selection-group` delimita uma seleção independente. As caixas individuais
+usam `data-select-item`; a caixa geral usa `data-select-all`, dentro de um label
+com `data-select-all-container hidden`. Sem JavaScript, a seleção individual e o
+envio permanecem disponíveis, e o servidor deve validar seleção vazia. Contadores
+e bloqueio de envio repetido são apenas melhorias de apresentação; nenhum desses
+scripts consulta APIs ou persiste descrições no navegador.
+
+Use `internal=True` para navegação interna e `desktop=True` para páginas técnicas
+com header público, como a entrada. As telas técnicas têm alvo desktop; as páginas
+do aluno mantêm adaptação móvel. O header público permanece público mesmo com uma
+sessão técnica. `logout_url` deve receber um endpoint POST de logout quando esse
+fluxo for implementado; enquanto ausente, o componente não cria uma ação falsa.
+
+### Validação do fluxo completo
+
 Verificar identificação correta pelo QR Code, campos, equipamento inativo, bloqueio de acesso anônimo, concorrência na resolução, seleção parcial, remoção do texto e contagens após encerramento. Usar PostgreSQL nos testes de transação. Testar o formulário no celular e o fluxo interno por teclado.
 
 A partir da etapa 11, seguir a [arquitetura completa](../MVPcompleto/ARQUITETURA.md) e as [telas completas](../MVPcompleto/TELAS_E_FLUXO.md). Evoluir por migrações, distinguindo registros fáceis dos novos: manter descarte imediato nos antigos, não reconstruir texto/autoria apagados e aplicar a retenção completa aos novos chamados. A fase fácil deve permanecer demonstrável antes dessa evolução.

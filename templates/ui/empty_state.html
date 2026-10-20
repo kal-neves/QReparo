@@ -1,0 +1,6 @@
+<div class="qr-card qr-empty">
+  <span class="qr-icon-disc">{% include "ui/icon.html" with name=icon|default:'monitor' only %}</span>
+  <h2>{{ title }}</h2>
+  {% if text %}<p>{{ text }}</p>{% endif %}
+  {% if href %}{% include "ui/button.html" with href=href label=link_label variant="outline-primary" only %}{% endif %}
+</div>

@@ -1,0 +1,12 @@
+{% if rows %}
+<div class="qr-table-wrap">
+  <table class="table qr-table">
+    <caption class="visually-hidden">{{ caption }}</caption>
+    <thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}{% if actions %}<th scope="col">Ação</th>{% endif %}</tr></thead>
+    <tbody>{% for row in rows %}<tr>
+      {% for cell in row.cells %}{% if forloop.first %}<th scope="row">{{ cell }}</th>{% else %}<td>{{ cell }}</td>{% endif %}{% endfor %}
+      {% if actions %}<td>{% if row.url %}<a class="btn btn-primary" href="{{ row.url }}">{{ row.action_label }}<span class="visually-hidden"> — {{ row.cells.0 }}</span></a>{% else %}—{% endif %}</td>{% endif %}
+    </tr>{% endfor %}</tbody>
+  </table>
+</div>
+{% else %}{% include "ui/empty_state.html" with title=empty_title|default:"Nenhum registro disponível." only %}{% endif %}

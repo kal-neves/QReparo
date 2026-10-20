@@ -24,4 +24,7 @@ def pagina(request, *, template_name, titulo, permissao=None, **parametros):
         'titulo': titulo,
         'template_previsto': template_name,
         'parametros_rota': parametros,
+        'internal': bool(permissoes),
+        'desktop': bool(permissoes) or template_name == 'registration/login.html',
+        'active_nav': 'contagem' if template_name == 'chamados/contagem.html' else 'painel',
     }, request))

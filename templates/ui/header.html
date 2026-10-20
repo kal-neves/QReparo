@@ -1,0 +1,25 @@
+{% load static %}
+<header class="qr-header">
+  <div class="qr-header-inner">
+    {% if internal and perms.chamados.view_chamado %}<a class="qr-brand" href="{% url 'paginas:painel' %}" aria-label="QReparo — Equipamentos com chamados">
+    {% else %}<span class="qr-brand">{% endif %}
+      <img src="{% static 'brand/QReparo_logo_noSign_horizontal.svg' %}" alt="QReparo" width="204" height="48">
+    {% if internal and perms.chamados.view_chamado %}</a>{% else %}</span>{% endif %}
+    {% if internal %}
+      <nav class="qr-nav" aria-label="Principal">
+        {% if perms.chamados.view_chamado %}
+          <a href="{% url 'paginas:painel' %}" {% if active_nav == 'painel' %}aria-current="page"{% endif %}>Equipamentos com chamados</a>
+          <a href="{% url 'paginas:contagem' %}" {% if active_nav == 'contagem' %}aria-current="page"{% endif %}>Contagem técnica</a>
+        {% endif %}
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Cadastros</a>{% endif %}
+      </nav>
+      {% if logout_url %}
+        <form class="qr-session" method="post" action="{{ logout_url }}">{% csrf_token %}
+          {% include "ui/button.html" with label="Sair" icon="logout" variant="outline-primary" type="submit" %}
+        </form>
+      {% endif %}
+    {% else %}
+      <a class="qr-public-access" href="{% url 'paginas:entrada' %}">Área técnica</a>
+    {% endif %}
+  </div>
+</header>

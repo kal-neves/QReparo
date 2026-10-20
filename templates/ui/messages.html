@@ -1,0 +1,6 @@
+{% for message in messages %}
+  {% if message.level == 40 %}{% include "ui/alert.html" with kind="danger" text=message only %}
+  {% elif message.level == 30 %}{% include "ui/alert.html" with kind="warning" text=message only %}
+  {% elif message.level == 25 %}{% include "ui/alert.html" with kind="success" icon="check" text=message only %}
+  {% else %}{% include "ui/alert.html" with kind="info" text=message only %}{% endif %}
+{% endfor %}

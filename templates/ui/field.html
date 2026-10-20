@@ -1,0 +1,8 @@
+{% load ui %}
+<div class="qr-field">
+  <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="qr-required">(obrigatório)</span>{% else %} <span class="qr-muted">(opcional)</span>{% endif %}</label>
+  {{ field|ui_control }}
+  {% if field.help_text %}<div id="{{ field.auto_id }}_helptext" class="form-text">{{ field.help_text }}</div>{% endif %}
+  {% if field.errors %}<ul id="{{ field.auto_id }}_errors" class="invalid-feedback d-block">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+  {% if counter %}<p class="qr-character-count" data-character-count="{{ field.id_for_label }}" hidden></p>{% endif %}
+</div>

@@ -1,0 +1,6 @@
+{% if title %}
+<div class="qr-page-heading">
+  {% if icon %}<span class="qr-icon-disc">{% include "ui/icon.html" with name=icon only %}</span>{% endif %}
+  <div><h1>{{ title }}</h1>{% if subtitle %}<p>{{ subtitle }}</p>{% endif %}</div>
+</div>
+{% endif %}

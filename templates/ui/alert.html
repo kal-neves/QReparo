@@ -1,0 +1,4 @@
+<div class="alert alert-{{ kind|default:'info' }} qr-alert" role="{% if kind == 'danger' %}alert{% else %}status{% endif %}">
+  {% include "ui/icon.html" with name=icon|default:'info' only %}
+  <div>{% if title %}<strong class="d-block">{{ title }}</strong>{% endif %}{{ text }}</div>
+</div>

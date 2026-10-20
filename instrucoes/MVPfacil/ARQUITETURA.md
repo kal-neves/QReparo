@@ -166,6 +166,12 @@ do aluno mantêm adaptação móvel. O header público permanece público mesmo 
 sessão técnica. `logout_url` deve receber um endpoint POST de logout quando esse
 fluxo for implementado; enquanto ausente, o componente não cria uma ação falsa.
 
+Com `DEBUG=True`, `/_ui/` exibe o catálogo visual com exemplos fictícios, sem
+operações de negócio. Essa rota não existe com `DEBUG=False`. Os placeholders
+das rotas de tela agora usam a base compartilhada; as telas e suas integrações
+continuam pendentes. Validar os includes com `manage.py test config.test_ui` e
+conferir visualmente o catálogo no desktop e os componentes públicos em 360 px.
+
 ### Validação do fluxo completo
 
 Verificar identificação correta pelo QR Code, campos, equipamento inativo, bloqueio de acesso anônimo, concorrência na resolução, seleção parcial, remoção do texto e contagens após encerramento. Usar PostgreSQL nos testes de transação. Testar o formulário no celular e o fluxo interno por teclado.

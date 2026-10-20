@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block heading %}
+  {% include 'ui/page_heading.html' with title=titulo subtitle='Referência visual de desenvolvimento · dados ilustrativos' icon='monitor' only %}
+{% endblock %}
+{% block content %}
+{% include 'ui/alert.html' with text='Esta prévia reúne componentes reutilizáveis. Não envia relatos nem executa ações de atendimento.' only %}
+<section class="qr-preview-section" aria-labelledby="visual-heading">
+  <h2 id="visual-heading">Identidade e ações</h2>
+  <div class="qr-card qr-stack">
+    <div class="d-flex flex-wrap gap-4">
+      <div class="qr-swatch"><span style="--swatch: #075442"></span>Verde principal</div>
+      <div class="qr-swatch"><span style="--swatch: #e1f5ec"></span>Menta</div>
+      <div class="qr-swatch"><span style="--swatch: #ffffff"></span>Superfície</div>
+    </div>
+    <div class="d-flex flex-wrap gap-3">
+      {% include 'ui/button.html' with label='Ação principal' icon='check' only %}
+      {% include 'ui/button.html' with label='Ação secundária' variant='outline-primary' only %}
+      {% include 'ui/button.html' with label='Ação indisponível' disabled=True only %}
+    </div>
+    <div class="d-flex flex-wrap gap-3">
+      {% include 'ui/badge.html' with label='Aberto' only %}
+      {% include 'ui/badge.html' with label='Resolvido' kind='success' only %}
+      {% include 'ui/badge.html' with label='3' kind='count' only %}
+    </div>
+  </div>
+</section>
+<section class="qr-preview-section" aria-labelledby="form-heading">
+  <h2 id="form-heading">Identificação e formulário</h2>
+  <div class="qr-preview-grid">
+    {% include 'ui/equipment_card.html' with identification='PC-01' description='Computador Lenovo' laboratory='Laboratório 01 — Informática' location='Bancada A · Posição 01' only %}
+    <div class="qr-card">
+      {% include 'ui/field.html' with field=example_form.problema only %}
+      {% include 'ui/field.html' with field=example_form.descricao counter=True only %}
+    </div>
+  </div>
+</section>
+<section class="qr-preview-section" aria-labelledby="feedback-heading">
+  <h2 id="feedback-heading">Mensagens e validação</h2>
+  <div class="qr-preview-grid">
+    <div class="qr-stack">
+      {% include 'ui/alert.html' with kind='success' icon='check' title='Operação concluída' text='Uma mensagem de sucesso permanece visível.' only %}
+      {% include 'ui/alert.html' with kind='warning' title='Confira antes de continuar' text='Avisos importantes aparecem junto da ação.' only %}
+      {% include 'ui/alert.html' with kind='danger' title='Não foi possível continuar' text='Explique o problema e como a pessoa pode prosseguir.' only %}
+    </div>
+    <div class="qr-card qr-stack">
+      {% include 'ui/error_summary.html' with form=invalid_form only %}
+      {% include 'ui/field.html' with field=invalid_form.problema only %}
+    </div>
+  </div>
+</section>
+<section class="qr-preview-section" aria-labelledby="empty-heading">
+  <h2 id="empty-heading">Estado vazio</h2>
+  {% include 'ui/empty_state.html' with title='Nenhum equipamento com relatos abertos.' text='Novos relatos aparecerão aqui quando forem enviados.' only %}
+</section>
+<section class="qr-preview-section" aria-labelledby="table-heading">
+  <h2 id="table-heading">Tabela · desktop</h2>
+  <div class="qr-preview-scroll"><div class="qr-preview-desktop">
+    {% include 'ui/table.html' with caption='Exemplo de equipamentos' columns=columns rows=rows only %}
+  </div></div>
+</section>
+<section class="qr-preview-section" aria-labelledby="selection-heading">
+  <h2 id="selection-heading">Cards e seleção · desktop</h2>
+  <div class="qr-preview-scroll"><form data-selection-group id="selection-demo" class="qr-preview-desktop">
+    <label class="qr-check mb-3" data-select-all-container hidden><input type="checkbox" class="form-check-input" data-select-all>Selecionar todos os relatos abertos</label>
+    {% include 'ui/report_card.html' with report_id='101' problem='Não liga' opened_at='20/10/2026 09:15' laboratory='Laboratório 01' description='O computador não liga, mesmo conectado à tomada.' only %}
+    {% include 'ui/report_card.html' with report_id='102' problem='Sem conexão de rede' opened_at='20/10/2026 09:30' laboratory='Laboratório 01' description='' only %}
+    {% include 'ui/selection_bar.html' %}
+  </form></div>
+  <p id="preview-result" class="form-text" role="status"></p>
+</section>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+  document.getElementById('selection-demo').addEventListener('submit', (event) => {
+    event.preventDefault();
+    document.getElementById('preview-result').textContent = 'Prévia apenas. Nenhuma resolução foi executada.';
+  });
+  // O exemplo de validação não deve roubar o foco na abertura do catálogo.
+  document.querySelector('[data-error-summary]')?.removeAttribute('data-error-summary');
+</script>
+{% endblock %}

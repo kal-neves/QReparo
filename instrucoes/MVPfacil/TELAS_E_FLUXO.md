@@ -23,6 +23,36 @@ O aluno não tem conta e apenas envia o relato. Somente técnicos autenticados e
 
 Equipamento desativado ou QR Code inválido gera mensagem compreensível e não permite envio. Falta de relatos ativos gera estado vazio no painel; equipamento não é apagado do cadastro ao sair dessa lista.
 
+## Rotas para as páginas Bootstrap
+
+Os templates abaixo são relativos a `templates/`. As rotas aceitam GET/HEAD e,
+enquanto o template não existir, exibem um aviso de implementação pendente.
+Nesta etapa, reservam apenas os endereços: não carregam dados de negócio nem
+executam envios, autenticação, resolução ou geração de etiquetas.
+
+| Página | Nome Django | URL | Template |
+| --- | --- | --- | --- |
+| Equipamento e relato | `paginas:relato` | `/e/<uuid:token>/` | `chamados/novo.html` |
+| Confirmação | `paginas:confirmacao` | `/recebido/` | `chamados/confirmacao.html` |
+| Entrada técnica | `paginas:entrada` | `/entrar/` | `registration/login.html` |
+| Equipamentos com chamados | `paginas:painel` | `/tecnico/` | `chamados/painel.html` |
+| Relatos do equipamento | `paginas:relatos_equipamento` | `/tecnico/equipamentos/<int:pk>/` | `chamados/detalhe.html` |
+| Conferência | `paginas:conferencia` | `/tecnico/equipamentos/<int:pk>/conferencia/` | `chamados/resolver.html` |
+| Contagem técnica | `paginas:contagem` | `/tecnico/contagem/` | `chamados/contagem.html` |
+| Etiqueta | `paginas:etiqueta` | `/equipamentos/<int:pk>/etiqueta/` | `equipamentos/etiqueta.html` |
+
+Use os nomes Django nos links, por exemplo:
+`{% url 'paginas:relatos_equipamento' pk=equipamento.pk %}`.
+O contexto inicial contém apenas `titulo`, `template_previsto` e `parametros_rota`
+(`token` ou `pk`, quando aplicável), além dos context processors configurados.
+Dados e ações POST serão integrados posteriormente.
+
+A raiz `/` encaminha visitantes à entrada e usuários autenticados ao painel.
+Os cadastros permanecem em `admin:index` (`/admin/`), e as APIs existentes mantêm
+seus endereços. As páginas internas exigem `chamados.view_chamado`; a conferência
+exige também `chamados.change_chamado`, e a etiqueta exige
+`equipamentos.view_equipamento`. Sem permissão, a resposta é 403.
+
 ## Fluxo do aluno
 
 1. Escanear o QR Code e conferir equipamento e laboratório preenchidos automaticamente.

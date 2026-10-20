@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.urls import include, path
-from chamados.views import chamado_list_view
+from .paginas import inicio
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('config.urls_paginas')),
     path('equipamentos/', include('equipamentos.urls', namespace='equipamentos')),
     path('chamados/', include('chamados.urls', namespace='chamados')),
-    path('', chamado_list_view, name='inicio'),
+    path('', inicio, name='inicio'),
 ]

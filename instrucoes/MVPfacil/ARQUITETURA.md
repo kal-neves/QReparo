@@ -185,3 +185,14 @@ de equipamento desativado. São dados fictícios e uma imagem estática de QR Co
 ilustrativo, sem consulta ao banco, geração de etiquetas reais ou logout.
 O template reutiliza os componentes comuns e possui CSS próprio de impressão.
 Na rota definitiva, os dados ainda dependem de integração futura.
+
+### Prévia visual do formulário do aluno
+
+Com `DEBUG=True`, abrir `/_ui/?tela=relato`. Estados visuais opcionais:
+`&estado=erro`, `outro`, `limite`, `sem-opcoes`, `inativo` ou `invalido`.
+O catálogo de problemas, o equipamento e as mensagens de erro são exemplos fixos
+no módulo de prévia. Não há consulta, validação de envio ou persistência.
+“Enviar relato” é um botão de demonstração e não submete formulário, mesmo sem
+JavaScript. O botão permanece sem ação; não há avisos de implementação na tela.
+O contador e a indicação de descrição obrigatória são apenas interações locais.
+O header público permanece igual mesmo com uma sessão técnica.

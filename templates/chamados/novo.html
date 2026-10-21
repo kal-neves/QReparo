@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_class %}qr-public{% endblock %}
+{% block header %}{% include 'ui/header.html' with internal=False %}{% endblock %}
+{% block main_class %}qr-width-form{% endblock %}
+{% block heading %}
+  {% if estado_visual == 'invalido' %}
+    {% include 'ui/page_heading.html' with title='Equipamento não encontrado' icon='monitor' only %}
+  {% elif estado_visual == 'inativo' %}
+    {% include 'ui/page_heading.html' with title='Equipamento indisponível' icon='monitor' only %}
+  {% else %}
+    {% include 'ui/page_heading.html' with title='Registrar problema' subtitle='Confira o equipamento e conte o que aconteceu.' icon='monitor' only %}
+  {% endif %}
+{% endblock %}
+{% block content %}
+  {% if estado_visual == 'invalido' %}
+    {% include 'ui/alert.html' with text='Confira se você escaneou a etiqueta correta.' only %}
+  {% elif estado_visual == 'inativo' %}
+    {% include 'ui/alert.html' with text='Este equipamento não está recebendo novos relatos.' only %}
+  {% elif equipamento and form %}
+    <div class="qr-stack">
+      {% include 'ui/equipment_card.html' with identification=equipamento.codigo_patrimonio name=equipamento.nome description=equipamento.descricao laboratory=equipamento.local.laboratorio.nome location=equipamento.local.nome only %}
+      {% include 'ui/alert.html' with text='Se este não for o equipamento correto, escaneie a etiqueta do equipamento desejado.' only %}
+      {% if estado_visual == 'sem-opcoes' %}
+        {% include 'ui/alert.html' with kind='warning' text='O registro de problemas está indisponível no momento. Tente novamente mais tarde.' only %}
+      {% else %}
+        <section class="qr-card" aria-label="Informações do problema" data-report-fields>
+          {% include 'ui/error_summary.html' with form=form only %}
+          {% include 'ui/field.html' with field=form.problema only %}
+          {% include 'ui/field.html' with field=form.descricao counter=True only %}
+          <div class="mt-4" data-report-action>
+            {% include 'ui/button.html' with label='Enviar relato' icon='send' extra_class='w-100' only %}
+          </div>
+        </section>
+      {% endif %}
+    </div>
+  {% else %}
+    {% include 'ui/alert.html' with text='O registro de problemas está indisponível no momento. Tente novamente mais tarde.' only %}
+  {% endif %}
+{% endblock %}
+{% block extra_scripts %}<script src="{% static 'js/relato.js' %}" defer></script>{% endblock %}

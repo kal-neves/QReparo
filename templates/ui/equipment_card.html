@@ -1,6 +1,6 @@
 <div class="qr-card qr-equipment{% if compact %} qr-equipment-compact{% endif %}">
   <dl>
-    <div>{% include "ui/icon.html" with name="monitor" only %}<div><dt>Equipamento</dt><dd>{{ identification }}{% if description %}<span class="qr-equipment-description">{{ description }}</span>{% endif %}</dd></div></div>
+    <div>{% include "ui/icon.html" with name="monitor" only %}<div><dt>Equipamento</dt><dd>{{ identification }}{% if name %} · {{ name }}{% endif %}{% if description %}<span class="qr-equipment-description">{{ description }}</span>{% endif %}</dd></div></div>
     <div>{% include "ui/icon.html" with name="lab" only %}<div><dt>Laboratório</dt><dd>{{ laboratory }}</dd></div></div>
     <div>{% include "ui/icon.html" with name="location" only %}<div><dt>Localização</dt><dd>{{ location }}</dd></div></div>
   </dl>

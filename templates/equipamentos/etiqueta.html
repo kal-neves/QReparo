@@ -11,7 +11,6 @@
   </div>
 {% endblock %}
 {% block content %}
-  {% if preview_visual %}<div class="qr-no-print mb-4">{% include 'ui/alert.html' with text='Prévia visual com dados fictícios. O QR Code é ilustrativo.' only %}</div>{% endif %}
   {% if equipamento %}
   {% if equipamento.ativo %}
     <section class="qr-card qr-label qr-print-area" aria-label="Prévia da etiqueta">
@@ -32,7 +31,7 @@
     </div>
   {% endif %}
   {% else %}
-    <div class="qr-no-print">{% include 'ui/alert.html' with text='A integração dos dados do equipamento ainda não foi implementada.' only %}</div>
+    <div class="qr-no-print">{% include 'ui/alert.html' with text='Não foi possível carregar a etiqueta do equipamento.' only %}</div>
   {% endif %}
 {% endblock %}
 {% block extra_scripts %}<script src="{% static 'js/etiqueta.js' %}" defer></script>{% endblock %}

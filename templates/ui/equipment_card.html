@@ -4,5 +4,5 @@
     <div>{% include "ui/icon.html" with name="lab" only %}<div><dt>Laboratório</dt><dd>{{ laboratory }}</dd></div></div>
     <div>{% include "ui/icon.html" with name="location" only %}<div><dt>Localização</dt><dd>{{ location }}</dd></div></div>
   </dl>
-  {% if inactive %}{% include "ui/alert.html" with kind="warning" text="Equipamento desativado. Não recebe novos relatos." only %}{% endif %}
+  {% if inactive %}<div class="mt-3 mb-2">{% include 'ui/badge.html' with label='Equipamento desativado' only %}</div>{% include "ui/alert.html" with kind="warning" text="Equipamento desativado. Não recebe novos relatos." only %}{% endif %}
 </div>

@@ -1,0 +1,7 @@
+.qr-reports-back { padding-left: 0; margin-bottom: 24px; }
+.qr-reports-list { margin-top: 32px; }
+.qr-reports-list > h2 { margin-bottom: 12px; }
+.qr-reports-select { margin-bottom: 16px; }
+.qr-reports .qr-report-top > div { min-width: 0; overflow-wrap: anywhere; }
+.qr-reports .qr-report-top > .qr-report-name { min-width: 140px; }
+.qr-reports .qr-report-top > .qr-badge { flex-shrink: 0; }

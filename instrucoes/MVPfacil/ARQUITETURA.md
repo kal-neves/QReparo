@@ -225,3 +225,15 @@ aceita `equipment_cells`, `count_badge` e `actions_static`; o header aceita
 Os links de navegação, “Ver relatos” e “Sair” permanecem sem ação nesta tela.
 A rota técnica existente mantém sua autorização; a integração dos registros segue
 pendente. O contador indica equipamentos distintos, não a soma dos relatos.
+
+### Relatos do equipamento — interface
+
+Em `DEBUG`, `/_ui/?tela=relatos` exibe os cards com dados fixos; estados opcionais:
+`&estado=vazio`, `&estado=inativo` e `&estado=parcial`. Não há consultas, resolução
+ou alteração de registros. A seleção individual, selecionar todos e o contador
+reutilizam `ui.js`, sem persistência. `ui/selection_bar.html` aceita
+`button_type='button'` para manter “Conferir resolução” sem envio; o padrão continua
+`submit` para integração futura. Sem JavaScript, a seleção individual permanece
+utilizável e o botão continua sem ação. Navegação e logout também são inertes.
+Os cards mostram o laboratório no envio separadamente da localização atual e
+preservam quebras de linha; descrições ausentes usam “Sem descrição adicional”.

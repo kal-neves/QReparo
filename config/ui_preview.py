@@ -49,6 +49,27 @@ def report_preview(request):
 
 @require_safe
 def preview(request):
+    if request.GET.get('tela') == 'relatos':
+        estado = request.GET.get('estado', '')
+        reports = [
+            {'id': 101, 'problem': 'Não liga', 'opened_at': '09/10/2026 09:15',
+             'laboratory': 'Lab. 01 — Informática', 'description': 'O computador não liga, mesmo conectado à tomada.'},
+            {'id': 102, 'problem': 'Teclado/mouse', 'opened_at': '10/10/2026 10:30',
+             'laboratory': 'Lab. 01 — Informática', 'description': ''},
+            {'id': 103, 'problem': 'Outro problema', 'opened_at': '11/10/2026 14:00',
+             'laboratory': 'Lab. 02 — Multimídia', 'description': 'O computador faz um barulho estranho.\nO ruído aparece ao ligar.'},
+        ]
+        return render(request, 'chamados/detalhe.html', {
+            'equipamento': {'codigo_patrimonio': 'PC-01', 'nome': 'Computador Lenovo',
+                'descricao': 'Computador de uso acadêmico',
+                'local': {'nome': 'Bancada A · Posição 01',
+                          'laboratorio': {'nome': 'Laboratório 01 — Informática'}}},
+            'reports': [] if estado == 'vazio' else reports[2:] if estado == 'parcial' else reports,
+            'equipment_inactive': estado == 'inativo',
+            'resolved_count': 2 if estado == 'parcial' else 0,
+            'resolution_message': '2 relatos resolvidos.',
+            'perms': {'chamados': {'view_chamado': True}}, 'user': {'is_staff': True},
+        })
     if request.GET.get('tela') == 'painel':
         # Dados fixos para composição visual; não consultam equipamento ou chamado.
         rows = [

@@ -1,0 +1,11 @@
+.qr-confirmation-main { display: grid; align-content: center; }
+.qr-confirmation { padding: 48px 32px; text-align: center; }
+.qr-confirmation .qr-page-heading { flex-direction: column; gap: 28px; margin: 0; }
+.qr-confirmation .qr-icon-disc { width: 112px; height: 112px; }
+.qr-confirmation .qr-icon-disc .qr-icon { width: 56px; height: 56px; }
+.qr-confirmation .qr-page-heading p { margin-top: 20px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .qr-public .qr-confirmation { padding: 36px 24px; }
+  .qr-public .qr-confirmation .qr-icon-disc { width: 96px; height: 96px; }
+  .qr-public .qr-confirmation .qr-icon-disc .qr-icon { width: 48px; height: 48px; }
+}

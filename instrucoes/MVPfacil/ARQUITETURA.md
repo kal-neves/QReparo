@@ -196,3 +196,10 @@ no módulo de prévia. Não há consulta, validação de envio ou persistência.
 JavaScript. O botão permanece sem ação; não há avisos de implementação na tela.
 O contador e a indicação de descrição obrigatória são apenas interações locais.
 O header público permanece igual mesmo com uma sessão técnica.
+
+### Tela de confirmação
+
+`/recebido/` renderiza `chamados/confirmacao.html`, com header público sem o link “Área técnica”, card de
+sucesso e footer compartilhados. Esta entrega contém somente a interface;
+não confirma persistência nem conecta o botão de envio a essa rota. A tela não
+exibe dados do relato, acompanhamento, reenvio ou avisos de implementação.

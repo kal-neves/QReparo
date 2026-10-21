@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Relato recebido{% endblock %}
+{% block body_class %}qr-public{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/confirmacao.css' %}">{% endblock %}
+{% block header %}{% include 'ui/header.html' with internal=False hide_technical_access=True %}{% endblock %}
+{% block main_class %}qr-width-small qr-confirmation-main{% endblock %}
+{% block heading %}{% endblock %}
+{% block content %}
+  <section class="qr-card qr-confirmation" aria-label="Confirmação de recebimento">
+    {% include 'ui/page_heading.html' with title='Relato recebido' subtitle='Seu relato foi enviado. Você já pode fechar esta página.' icon='check' only %}
+  </section>
+{% endblock %}

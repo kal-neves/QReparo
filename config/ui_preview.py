@@ -49,6 +49,22 @@ def report_preview(request):
 
 @require_safe
 def preview(request):
+    if request.GET.get('tela') == 'painel':
+        # Dados fixos para composição visual; não consultam equipamento ou chamado.
+        rows = [
+            {'cells': ['PC-01', 'Lab. 01 — Informática', 'Bancada A · Posição 01', 3], 'description': 'Computador Lenovo', 'icon': 'monitor', 'action_label': 'Ver relatos'},
+            {'cells': ['PC-12', 'Lab. 01 — Informática', 'Bancada B · Posição 02', 4], 'description': 'Computador Dell', 'icon': 'monitor', 'action_label': 'Ver relatos'},
+            {'cells': ['PRJ-03', 'Lab. 02 — Multimídia', 'Teto · Centro', 2], 'description': 'Projetor Epson', 'icon': 'monitor', 'action_label': 'Ver relatos'},
+            {'cells': ['IMP-01', 'Lab. 03 — Informática', 'Mesa de apoio', 5], 'description': 'Impressora HP', 'icon': 'print', 'action_label': 'Ver relatos'},
+            {'cells': ['AC-02', 'Lab. 04 — Redes', 'Parede lateral', 1], 'description': 'Ar-condicionado', 'icon': 'monitor', 'action_label': 'Ver relatos'},
+            {'cells': ['MIC-01', 'Lab. 05 — Biologia', 'Bancada 01', 1], 'description': 'Microscópio', 'icon': 'lab', 'action_label': 'Ver relatos'},
+        ]
+        return render(request, 'chamados/painel.html', {
+            'rows': [] if request.GET.get('estado') == 'vazio' else rows,
+            'columns': ['Equipamento', 'Laboratório', 'Localização', 'Relatos abertos'],
+            'perms': {'chamados': {'view_chamado': True}},
+            'user': {'is_staff': request.GET.get('perfil') != 'tecnico'},
+        })
     if request.GET.get('tela') == 'entrada':
         estado = request.GET.get('estado', '')
         return render(request, 'registration/login.html', {

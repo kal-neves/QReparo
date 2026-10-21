@@ -213,3 +213,15 @@ campos de senha nunca recebem valor inicial. O header, título, alertas, botão 
 footer também são compartilhados. Em `DEBUG`, `/_ui/?tela=entrada&estado=erro`
 mostra erro fixo com usuário de exemplo e senha vazia; `&estado=expirada` mostra o
 aviso de sessão. Esses estados são apenas exemplos de apresentação.
+
+### Painel visual de equipamentos
+
+Em `DEBUG`, abrir `/_ui/?tela=painel` ou acrescentar `&estado=vazio` para a lista
+vazia. `&perfil=tecnico` exibe a navegação sem “Cadastros”. Esses perfis e registros
+são dados fixos do catálogo visual; não modificam usuário, sessão ou permissões.
+O painel reutiliza header, título, tabela, badges, ícones e estado vazio. A tabela
+aceita `equipment_cells`, `count_badge` e `actions_static`; o header aceita
+`navigation_static` para mostrar ações sem destino durante a etapa de interface.
+Os links de navegação, “Ver relatos” e “Sair” permanecem sem ação nesta tela.
+A rota técnica existente mantém sua autorização; a integração dos registros segue
+pendente. O contador indica equipamentos distintos, não a soma dos relatos.

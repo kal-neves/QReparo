@@ -1,19 +1,21 @@
 {% load static %}
 <header class="qr-header">
   <div class="qr-header-inner">
-    {% if internal and perms.chamados.view_chamado %}<a class="qr-brand" href="{% url 'paginas:painel' %}" aria-label="QReparo — Equipamentos com chamados">
+    {% if internal and perms.chamados.view_chamado %}<a class="qr-brand" {% if navigation_static %}role="link" aria-disabled="true" tabindex="0"{% else %}href="{% url 'paginas:painel' %}"{% endif %} aria-label="QReparo — Equipamentos com chamados">
     {% else %}<span class="qr-brand">{% endif %}
       <img src="{% static 'brand/QReparo_logo_noSign_horizontal.svg' %}" alt="QReparo" width="204" height="48">
     {% if internal and perms.chamados.view_chamado %}</a>{% else %}</span>{% endif %}
     {% if internal %}
       <nav class="qr-nav" aria-label="Principal">
         {% if perms.chamados.view_chamado %}
-          <a href="{% url 'paginas:painel' %}" {% if active_nav == 'painel' %}aria-current="page"{% endif %}>Equipamentos com chamados</a>
-          <a href="{% url 'paginas:contagem' %}" {% if active_nav == 'contagem' %}aria-current="page"{% endif %}>Contagem técnica</a>
+          <a {% if navigation_static %}role="link" aria-disabled="true" tabindex="0"{% else %}href="{% url 'paginas:painel' %}"{% endif %} {% if active_nav == 'painel' %}aria-current="page"{% endif %}>Equipamentos com chamados</a>
+          <a {% if navigation_static %}role="link" aria-disabled="true" tabindex="0"{% else %}href="{% url 'paginas:contagem' %}"{% endif %} {% if active_nav == 'contagem' %}aria-current="page"{% endif %}>Contagem técnica</a>
         {% endif %}
-        {% if user.is_staff %}<a href="{% url 'admin:index' %}" {% if active_nav == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>{% endif %}
+        {% if user.is_staff %}<a {% if navigation_static %}role="link" aria-disabled="true" tabindex="0"{% else %}href="{% url 'admin:index' %}"{% endif %} {% if active_nav == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>{% endif %}
       </nav>
-      {% if logout_url %}
+      {% if navigation_static %}
+        <div class="qr-session">{% include 'ui/button.html' with label='Sair' icon='logout' variant='outline-primary' only %}</div>
+      {% elif logout_url %}
         <form class="qr-session" method="post" action="{{ logout_url }}">{% csrf_token %}
           {% include "ui/button.html" with label="Sair" icon="logout" variant="outline-primary" type="submit" %}
         </form>

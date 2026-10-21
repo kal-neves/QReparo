@@ -1,0 +1,8 @@
+.qr-panel-count { margin-bottom: 16px; }
+.qr-panel .qr-table-equipment { display: flex; align-items: center; gap: 14px; }
+.qr-panel .qr-table-equipment .qr-icon-disc { width: 44px; height: 44px; }
+.qr-panel .qr-table-equipment .qr-icon { width: 24px; height: 24px; }
+.qr-panel .qr-table-description { display: block; margin-top: 4px; font-weight: 400; color: var(--qr-muted); font-size: .875rem; }
+.qr-panel .qr-table th:nth-child(4), .qr-panel .qr-table td:nth-child(4) { text-align: center; }
+.qr-panel .qr-table td:last-child { white-space: nowrap; }
+.qr-panel .qr-table .btn { font-size: .875rem; padding: 10px 16px; }

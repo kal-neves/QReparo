@@ -11,7 +11,7 @@
           <a href="{% url 'paginas:painel' %}" {% if active_nav == 'painel' %}aria-current="page"{% endif %}>Equipamentos com chamados</a>
           <a href="{% url 'paginas:contagem' %}" {% if active_nav == 'contagem' %}aria-current="page"{% endif %}>Contagem técnica</a>
         {% endif %}
-        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Cadastros</a>{% endif %}
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}" {% if active_nav == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>{% endif %}
       </nav>
       {% if logout_url %}
         <form class="qr-session" method="post" action="{{ logout_url }}">{% csrf_token %}

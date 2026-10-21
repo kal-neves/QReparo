@@ -177,3 +177,11 @@ conferir visualmente o catálogo no desktop e os componentes públicos em 360 px
 Verificar identificação correta pelo QR Code, campos, equipamento inativo, bloqueio de acesso anônimo, concorrência na resolução, seleção parcial, remoção do texto e contagens após encerramento. Usar PostgreSQL nos testes de transação. Testar o formulário no celular e o fluxo interno por teclado.
 
 A partir da etapa 11, seguir a [arquitetura completa](../MVPcompleto/ARQUITETURA.md) e as [telas completas](../MVPcompleto/TELAS_E_FLUXO.md). Evoluir por migrações, distinguindo registros fáceis dos novos: manter descarte imediato nos antigos, não reconstruir texto/autoria apagados e aplicar a retenção completa aos novos chamados. A fase fácil deve permanecer demonstrável antes dessa evolução.
+
+### Prévia visual da etiqueta
+
+Com `DEBUG=True`, abrir `/_ui/?tela=etiqueta`; usar `&estado=inativo` para o aviso
+de equipamento desativado. São dados fictícios e uma imagem estática de QR Code
+ilustrativo, sem consulta ao banco, geração de etiquetas reais ou logout.
+O template reutiliza os componentes comuns e possui CSS próprio de impressão.
+Na rota definitiva, os dados ainda dependem de integração futura.

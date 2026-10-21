@@ -1,0 +1,18 @@
+.qr-label-back { padding-left: 0; margin-bottom: 24px; }
+.qr-label { max-width: 560px; margin: 0 auto; padding: 28px 32px; text-align: center; overflow-wrap: anywhere; }
+.qr-label-brand { width: 204px; height: auto; margin-bottom: 24px; }
+.qr-label h2 { font-size: 1.5rem; margin: 0 0 12px; }
+.qr-label p { color: var(--qr-muted); margin: 0 0 8px; }
+.qr-label-code { display: block; width: 256px; height: 256px; margin: 8px auto; }
+.qr-label .qr-label-instruction { margin-bottom: 0; }
+.qr-label-actions { text-align: center; margin-top: 24px; }
+.qr-label-actions p { color: var(--qr-muted); margin-top: 12px; font-size: .875rem; }
+@media print {
+  @page { margin: 12mm; }
+  .qr-label-page .qr-main > :not(.qr-print-area) { display: none !important; }
+  .qr-label { width: 110mm; max-width: 100%; margin: 0 auto; padding: 6mm; border: 1px solid #075442; break-inside: avoid; box-shadow: none; }
+  .qr-label-brand { width: 48mm; margin-bottom: 5mm; }
+  .qr-label h2 { font-size: 15pt; }
+  .qr-label p { color: #000; font-size: 11pt; }
+  .qr-label-code { width: 55mm; height: 55mm; }
+}

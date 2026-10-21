@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_class %}qr-desktop qr-label-page{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/etiqueta.css' %}">{% endblock %}
+{% block heading %}
+  <div class="qr-no-print">
+    {% if cadastro_url %}
+      {% include 'ui/button.html' with href=cadastro_url label='Voltar ao cadastro do equipamento' icon='arrow-left' variant='link' extra_class='qr-label-back' only %}
+    {% endif %}
+    {% include 'ui/page_heading.html' with title=titulo icon='print' only %}
+  </div>
+{% endblock %}
+{% block content %}
+  {% if preview_visual %}<div class="qr-no-print mb-4">{% include 'ui/alert.html' with text='Prévia visual com dados fictícios. O QR Code é ilustrativo.' only %}</div>{% endif %}
+  {% if equipamento %}
+  {% if equipamento.ativo %}
+    <section class="qr-card qr-label qr-print-area" aria-label="Prévia da etiqueta">
+      <img class="qr-label-brand" src="{% static 'brand/QReparo_logo_noSign_horizontal.svg' %}" alt="QReparo" width="204" height="48">
+      <h2>{{ equipamento.codigo_patrimonio }} · {{ equipamento.nome }}</h2>
+      <p>{{ equipamento.local.laboratorio.nome }}</p>
+      <p>{{ equipamento.local.nome }}</p>
+      <img class="qr-label-code" src="{{ qr_image }}" alt="QR Code para registrar um problema em {{ equipamento.codigo_patrimonio }} — {{ equipamento.nome }}" width="256" height="256">
+      <p class="qr-label-instruction">Escaneie para registrar um problema</p>
+    </section>
+    <div class="qr-label-actions qr-no-print">
+      <div id="imprimir-etiqueta" hidden>{% include 'ui/button.html' with label='Imprimir etiqueta' icon='print' only %}</div>
+      <p>Use a função de impressão do navegador.</p>
+    </div>
+  {% else %}
+    <div class="qr-no-print">
+      {% include 'ui/alert.html' with kind='warning' text='Este equipamento está desativado e não recebe novos relatos.' only %}
+    </div>
+  {% endif %}
+  {% else %}
+    <div class="qr-no-print">{% include 'ui/alert.html' with text='A integração dos dados do equipamento ainda não foi implementada.' only %}</div>
+  {% endif %}
+{% endblock %}
+{% block extra_scripts %}<script src="{% static 'js/etiqueta.js' %}" defer></script>{% endblock %}

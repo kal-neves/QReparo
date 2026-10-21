@@ -1,6 +1,7 @@
 """Exemplos visuais, disponíveis somente quando DEBUG está ativo."""
 from django import forms
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.views.decorators.http import require_safe
 
 
@@ -13,6 +14,18 @@ class ExampleForm(forms.Form):
 
 @require_safe
 def preview(request):
+    if request.GET.get('tela') == 'etiqueta':
+        return render(request, 'equipamentos/etiqueta.html', {
+            'titulo': 'Etiqueta do equipamento', 'internal': True, 'desktop': True,
+            'active_nav': 'cadastros', 'preview_visual': True,
+            'equipamento': {
+                'codigo_patrimonio': 'PC-01', 'nome': 'Computador Lenovo',
+                'ativo': request.GET.get('estado') != 'inativo',
+                'local': {'nome': 'Bancada A · Posição 01',
+                          'laboratorio': {'nome': 'Laboratório 01 — Informática'}},
+            },
+            'qr_image': static('img/qr-exemplo.png'),
+        })
     invalid = ExampleForm({'problema': '', 'descricao': ''}, prefix='invalid')
     invalid.is_valid()
     return render(request, 'ui/catalogo.html', {

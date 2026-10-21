@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Área técnica{% endblock %}
+{% block body_class %}qr-desktop{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/login.css' %}">{% endblock %}
+{% block header %}{% include 'ui/header.html' with internal=False hide_technical_access=True %}{% endblock %}
+{% block main_class %}qr-width-small qr-login-main{% endblock %}
+{% block heading %}{% endblock %}
+{% block content %}
+  <section class="qr-card qr-login" aria-label="Entrada técnica">
+    {% include 'ui/page_heading.html' with title='Área técnica' subtitle='Entre com a conta fornecida pela equipe responsável.' icon='lock' only %}
+    {% if login_error %}
+      <div class="mb-4" tabindex="-1" data-error-summary>
+        {% include 'ui/alert.html' with kind='danger' text='Não foi possível entrar. Confira suas credenciais.' only %}
+      </div>
+    {% endif %}
+    {% if session_expired %}
+      <div class="mb-4">{% include 'ui/alert.html' with kind='warning' text='Entre novamente para continuar.' only %}</div>
+    {% endif %}
+    {% include 'ui/input.html' with input_id='login-username' name='username' label='Usuário' autocomplete='username' placeholder='Digite seu usuário' required=True value=username only %}
+    {% include 'ui/input.html' with input_id='login-password' name='password' label='Senha' type='password' autocomplete='current-password' placeholder='Digite sua senha' required=True only %}
+    <div class="mt-4">
+      {% include 'ui/button.html' with label='Entrar' extra_class='w-100' only %}
+    </div>
+  </section>
+{% endblock %}

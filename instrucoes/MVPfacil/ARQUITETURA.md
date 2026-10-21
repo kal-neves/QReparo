@@ -203,3 +203,13 @@ O header público permanece igual mesmo com uma sessão técnica.
 sucesso e footer compartilhados. Esta entrega contém somente a interface;
 não confirma persistência nem conecta o botão de envio a essa rota. A tela não
 exibe dados do relato, acompanhamento, reenvio ou avisos de implementação.
+
+### Tela de entrada técnica
+
+`/entrar/` apresenta a interface desktop com campos de usuário e senha e botão
+“Entrar” sem ação. Não há formulário de envio, autenticação ou alteração de sessão.
+Os campos reutilizam `ui/input.html` (label, ID, tipo, autocomplete e obrigatoriedade);
+campos de senha nunca recebem valor inicial. O header, título, alertas, botão e
+footer também são compartilhados. Em `DEBUG`, `/_ui/?tela=entrada&estado=erro`
+mostra erro fixo com usuário de exemplo e senha vazia; `&estado=expirada` mostra o
+aviso de sessão. Esses estados são apenas exemplos de apresentação.

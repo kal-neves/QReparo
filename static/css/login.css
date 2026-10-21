@@ -1,0 +1,6 @@
+.qr-login-main { display: grid; align-content: center; }
+.qr-login { padding: 32px; }
+.qr-login .qr-page-heading { flex-direction: column; text-align: center; gap: 20px; }
+.qr-login .qr-icon-disc { width: 88px; height: 88px; }
+.qr-login .qr-icon-disc .qr-icon { width: 40px; height: 40px; }
+.qr-login .qr-page-heading p { line-height: 1.5; }

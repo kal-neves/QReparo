@@ -49,6 +49,12 @@ def report_preview(request):
 
 @require_safe
 def preview(request):
+    if request.GET.get('tela') == 'entrada':
+        estado = request.GET.get('estado', '')
+        return render(request, 'registration/login.html', {
+            'login_error': estado == 'erro', 'session_expired': estado == 'expirada',
+            'username': 'tecnico.exemplo' if estado == 'erro' else '',
+        })
     if request.GET.get('tela') == 'relato':
         return report_preview(request)
     if request.GET.get('tela') == 'etiqueta':

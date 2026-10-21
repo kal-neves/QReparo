@@ -1,0 +1,4 @@
+<div class="qr-field">
+  <label class="form-label" for="{{ input_id }}">{{ label }}{% if required %} <span class="qr-required">({% if type == 'password' %}obrigatória{% else %}obrigatório{% endif %})</span>{% endif %}</label>
+  <input class="form-control" id="{{ input_id }}" name="{{ name }}" type="{{ type|default:'text' }}"{% if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}{% if placeholder %} placeholder="{{ placeholder }}"{% endif %}{% if required %} required{% endif %}{% if type != 'password' and value %} value="{{ value }}"{% endif %}>
+</div>

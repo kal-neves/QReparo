@@ -4,13 +4,41 @@ from uuid import UUID
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
 from equipamentos.models import Equipamento
 from .models import Chamado, ConflitoEstado, Tag
+from .forms import RelatoForm
+from .servicos import criar_relato
+
+
+@never_cache
+@sensitive_post_parameters('descricao')
+@require_http_methods(['GET', 'POST'])
+def novo_relato(request, token):
+    equipamento = Equipamento.objects.select_related('local__laboratorio').filter(qr_token=token).first()
+    contexto = {'titulo': 'Registrar problema', 'equipamento': equipamento, 'internal': False}
+    if equipamento is None:
+        return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'invalido'}, status=404)
+    if not equipamento.ativo:
+        return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'inativo'}, status=403)
+    form = RelatoForm(request.POST if request.method == 'POST' else None)
+    contexto['form'] = form
+    if not form.fields['problema'].queryset.exists():
+        return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'sem-opcoes'}, status=503)
+    if request.method == 'POST' and form.is_valid():
+        try:
+            criar_relato(token=token, **form.cleaned_data)
+        except Equipamento.DoesNotExist:
+            return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'invalido'}, status=404)
+        except ValidationError:
+            form.add_error(None, 'Não foi possível enviar o relato Confira o equipamento e tente novamente')
+        else:
+            return redirect('paginas:confirmacao')
+    return render(request, 'chamados/novo.html', contexto)
 
 
 def _json(request):
@@ -88,9 +116,8 @@ def api_chamados(request):
         descricao = dados.get('descricao', '')
         if not isinstance(descricao, str):
             raise ValidationError('Descrição inválida.')
-        equipamento = get_object_or_404(Equipamento, qr_token=token)
         problema = get_object_or_404(Tag, pk=int(problema_id))
-        Chamado.objects.create(equipamento=equipamento, problema=problema, descricao=descricao.strip())
+        criar_relato(token=token, problema=problema, descricao=descricao)
     except (ValueError, TypeError):
         return JsonResponse({'erro': 'Identificador de QR inválido.'}, status=400)
     except ValidationError as erro:

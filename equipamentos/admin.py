@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django import forms
+from django.urls import reverse
+from django.utils.html import format_html
 from .models import Equipamento, Laboratorio, Local
 
 
@@ -36,8 +38,14 @@ class EquipamentoAdmin(admin.ModelAdmin):
     list_display = ('codigo_patrimonio', 'nome', 'local', 'ativo')
     list_filter = ('ativo', 'local__laboratorio')
     search_fields = ('codigo_patrimonio', 'nome')
-    readonly_fields = ('qr_token',)
+    readonly_fields = ('qr_token', 'etiqueta')
     list_select_related = ('local__laboratorio',)
+
+    @admin.display(description='Etiqueta')
+    def etiqueta(self, obj):
+        if not obj.pk:
+            return 'Salve o equipamento para gerar a etiqueta'
+        return format_html('<a href="{}">Ver etiqueta</a>', reverse('paginas:etiqueta', args=[obj.pk]))
 
     # Sem inline de relatos ou ações de atendimento. Contas de cadastro não
     # recebem acesso aos relatos automaticamente.

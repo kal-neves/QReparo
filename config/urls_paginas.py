@@ -1,12 +1,12 @@
 from django.urls import path
 from .paginas import pagina
+from equipamentos.views import etiqueta
+from chamados.views import novo_relato
 
 app_name = 'paginas'
 
 urlpatterns = [
-    path('e/<uuid:token>/', pagina, {
-        'template_name': 'chamados/novo.html', 'titulo': 'Registrar problema',
-    }, name='relato'),
+    path('e/<uuid:token>/', novo_relato, name='relato'),
     path('recebido/', pagina, {
         'template_name': 'chamados/confirmacao.html', 'titulo': 'Confirmação de envio',
     }, name='confirmacao'),
@@ -29,8 +29,5 @@ urlpatterns = [
         'template_name': 'chamados/contagem.html', 'titulo': 'Contagem técnica',
         'permissao': 'chamados.view_chamado',
     }, name='contagem'),
-    path('equipamentos/<int:pk>/etiqueta/', pagina, {
-        'template_name': 'equipamentos/etiqueta.html', 'titulo': 'Etiqueta do equipamento',
-        'permissao': 'equipamentos.view_equipamento',
-    }, name='etiqueta'),
+    path('equipamentos/<int:pk>/etiqueta/', etiqueta, name='etiqueta'),
 ]

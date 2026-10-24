@@ -24,14 +24,20 @@
       {% if estado_visual == 'sem-opcoes' %}
         {% include 'ui/alert.html' with kind='warning' text='O registro de problemas está indisponível no momento. Tente novamente mais tarde.' only %}
       {% else %}
+        {% if not preview_visual %}<form method="post" action="{% url 'paginas:relato' equipamento.qr_token %}">{% csrf_token %}{% endif %}
         <section class="qr-card" aria-label="Informações do problema" data-report-fields>
           {% include 'ui/error_summary.html' with form=form only %}
           {% include 'ui/field.html' with field=form.problema only %}
           {% include 'ui/field.html' with field=form.descricao counter=True only %}
           <div class="mt-4" data-report-action>
-            {% include 'ui/button.html' with label='Enviar relato' icon='send' extra_class='w-100' only %}
+            {% if preview_visual %}
+              {% include 'ui/button.html' with label='Enviar relato' icon='send' extra_class='w-100' only %}
+            {% else %}
+              {% include 'ui/button.html' with label='Enviar relato' icon='send' type='submit' extra_class='w-100' only %}
+            {% endif %}
           </div>
         </section>
+        {% if not preview_visual %}</form>{% endif %}
       {% endif %}
     </div>
   {% else %}

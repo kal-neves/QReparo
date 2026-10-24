@@ -105,3 +105,4 @@ STATICFILES_DIRS = [BASE_DIR / 'static', ('brand', BASE_DIR / 'assets')]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SECURE_REFERRER_POLICY = 'no-referrer'
+QREPARO_PUBLIC_URL = os.environ.get('QREPARO_PUBLIC_URL', '')

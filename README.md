@@ -1,5 +1,33 @@
 # QReparo
 
+## backend em desenvolvimento
+
+o cadastro de equipamentos e o fluxo público de relato já estão conectados ao banco
+
+- cadastre laboratórios, locais, equipamentos e problemas no admin
+- a identificação do equipamento pode ser um código interno, sem patrimônio institucional
+- preencha a descrição do equipamento e mantenha cada local no seu laboratório original
+- para mover um equipamento, escolha outro local no cadastro do equipamento
+- execute `python manage.py seed_qreparo` para preparar dois equipamentos de exemplo
+- configure `QREPARO_PUBLIC_URL` com a origem da aplicação, como `https://qreparo.example`
+- abra o equipamento no admin e use o link de etiqueta
+- o qr abre um formulário público com um problema e descrição opcional, obrigatória para outro problema
+
+o endereço configurado para as etiquetas precisa ser acessível pelo celular e permitido em `DJANGO_ALLOWED_HOSTS`
+
+login da aplicação, painel com dados reais, conferência em lote e contagem ainda estão em desenvolvimento
+
+para verificar o backend, configure as variáveis `POSTGRES_*` para um banco de desenvolvimento e execute
+
+```powershell
+.\.venv\Scripts\python.exe manage.py test equipamentos chamados config.test_ui
+.\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+```
+
+os testes usam um banco separado criado pelo django e exigem permissão para criar bancos no postgres
+
+não use credenciais de produção para executar os testes
+
 Aplicação Django para registrar e acompanhar problemas em equipamentos de laboratórios universitários por QR Code.
 
 ## Instalação para desenvolvimento

@@ -2,10 +2,29 @@ from django.contrib.auth.decorators import permission_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
 from .models import Equipamento
+from .servicos import gerar_qr, url_do_relato
+
+
+@never_cache
+@permission_required('equipamentos.view_equipamento', raise_exception=True)
+@require_http_methods(['GET'])
+def etiqueta(request, pk):
+    equipamento = get_object_or_404(Equipamento.objects.select_related('local__laboratorio'), pk=pk)
+    cadastro_url = None
+    if request.user.is_staff:
+        cadastro_url = reverse('admin:equipamentos_equipamento_change', args=[pk])
+    return render(request, 'equipamentos/etiqueta.html', {
+        'titulo': 'Etiqueta do equipamento',
+        'internal': True,
+        'equipamento': equipamento,
+        'cadastro_url': cadastro_url,
+        'qr_image': gerar_qr(url_do_relato(equipamento)) if equipamento.ativo else None,
+    })
 
 
 def _json(request):

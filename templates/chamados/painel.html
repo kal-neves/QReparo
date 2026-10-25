@@ -3,7 +3,7 @@
 {% block title %}Equipamentos com chamados{% endblock %}
 {% block body_class %}qr-desktop{% endblock %}
 {% block extra_head %}<link rel="stylesheet" href="{% static 'css/painel.css' %}">{% endblock %}
-{% block header %}{% include 'ui/header.html' with internal=True active_nav='painel' navigation_static=True %}{% endblock %}
+{% block header %}{% if backend_connected %}{% include 'ui/header.html' with internal=True active_nav='painel' %}{% else %}{% include 'ui/header.html' with internal=True active_nav='painel' navigation_static=True %}{% endif %}{% endblock %}
 {% block main_class %}qr-width-work qr-panel{% endblock %}
 {% block heading %}
   {% include 'ui/page_heading.html' with title='Equipamentos com chamados' subtitle='Selecione um equipamento para consultar os relatos abertos.' icon='monitor' only %}
@@ -11,7 +11,7 @@
 {% block content %}
   <p class="qr-muted qr-panel-count">{{ rows|length }} {% if rows|length == 1 %}equipamento{% else %}equipamentos{% endif %} com relatos abertos</p>
   {% if rows %}
-    {% include 'ui/table.html' with caption='Equipamentos com relatos abertos' columns=columns rows=rows actions=True actions_static=True equipment_cells=True count_badge=True only %}
+    {% include 'ui/table.html' with caption='Equipamentos com relatos abertos' columns=columns rows=rows actions=True actions_static=preview_visual equipment_cells=True count_badge=True only %}
   {% else %}
     {% include 'ui/empty_state.html' with title='Nenhum equipamento com relatos abertos.' text='Novos relatos aparecerão aqui quando forem enviados.' icon='monitor' only %}
   {% endif %}

@@ -1,0 +1,1 @@
+<a class="btn btn-{{ variant|default:'link' }}{% if extra_class %} {{ extra_class }}{% endif %}" role="link" aria-disabled="true" tabindex="0">{% if icon %}{% include 'ui/icon.html' with name=icon only %}{% endif %}{{ label }}</a>

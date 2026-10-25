@@ -10,7 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
 from equipamentos.models import Equipamento
-from .models import Chamado, ConflitoEstado, Tag
+from .models import Chamado, Tag
 from .forms import RelatoForm
 from .servicos import criar_relato
 
@@ -86,8 +86,7 @@ def chamado_list_view(request):
     if _json(request):
         dados = [_serializar(chamado) for chamado in chamados]
         return JsonResponse({'chamados': dados, 'total': len(dados)})
-    # Os templates ainda não foram implementados nesta etapa.
-    return render(request, 'chamados/lista.html', {'chamados': chamados})
+    return redirect('paginas:painel')
 
 
 @never_cache
@@ -97,7 +96,7 @@ def chamado_detail_view(request, pk):
     chamado = get_object_or_404(Chamado.objects.select_related('problema'), pk=pk, status=Chamado.ABERTO)
     if _json(request):
         return JsonResponse(_serializar(chamado))
-    return render(request, 'chamados/detalhes.html', {'chamado': chamado})
+    return redirect('paginas:relatos_equipamento', pk=chamado.equipamento_id)
 
 
 @never_cache
@@ -132,19 +131,4 @@ def api_chamados(request):
 @permission_required(('chamados.view_chamado', 'chamados.change_chamado'), raise_exception=True)
 @require_http_methods(['POST', 'PATCH'])
 def api_chamado_atualizar_status(request, pk):
-    """Resolução individual já existente, sem laudo/autoria/reabertura.
-
-    Conferência e resolução em lote serão implementadas separadamente.
-    """
-    try:
-        dados = _dados(request)
-        if dados.get('status') != Chamado.RESOLVIDO:
-            raise ValidationError('A única transição permitida é para Resolvido.')
-        chamado = get_object_or_404(Chamado, pk=pk)
-        chamado.status = Chamado.RESOLVIDO
-        chamado.save(update_fields=['status'])
-    except ConflitoEstado:
-        return JsonResponse({'erro': 'O relato já foi resolvido.'}, status=409)
-    except ValidationError as erro:
-        return JsonResponse({'erros': erro.messages}, status=400)
-    return JsonResponse({'mensagem': 'Relato resolvido; descrição removida.'})
+    return JsonResponse({'erro': 'Use a seleção e conferência na área técnica para resolver relatos'}, status=410)

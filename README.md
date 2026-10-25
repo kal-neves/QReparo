@@ -21,7 +21,19 @@ para preparar um técnico, crie uma conta no admin e atribua as permissões `vie
 
 a permissão `view_equipamento` permite gerar etiquetas e o acesso ao admin depende também de `is_staff`
 
-painel com dados reais, conferência em lote e contagem ainda estão em desenvolvimento
+o painel mostra equipamentos com relatos abertos, inclusive equipamentos desativados que ainda precisam de atendimento
+
+selecione os relatos de um equipamento, confira a seleção e confirme a resolução
+
+se algum relato já tiver sido resolvido, o lote inteiro é recusado e exige nova conferência
+
+a resolução apaga a descrição na mesma transação e mantém os dados técnicos usados na contagem
+
+o endpoint antigo de resolução individual em `/chamados/api/<id>/status/` retorna 410 para contas autorizadas e não altera registros
+
+use o fluxo de seleção e conferência da área técnica para resolver relatos
+
+a validação no celular, a leitura das etiquetas impressas e as metas de qualidade ainda precisam de verificação manual
 
 para verificar o backend, configure as variáveis `POSTGRES_*` para um banco de desenvolvimento e execute
 

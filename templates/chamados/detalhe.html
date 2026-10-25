@@ -3,10 +3,10 @@
 {% block title %}Relatos de {{ equipamento.codigo_patrimonio }}{% endblock %}
 {% block body_class %}qr-desktop{% endblock %}
 {% block extra_head %}<link rel="stylesheet" href="{% static 'css/relatos.css' %}">{% endblock %}
-{% block header %}{% include 'ui/header.html' with internal=True active_nav='painel' navigation_static=True %}{% endblock %}
+{% block header %}{% if backend_connected %}{% include 'ui/header.html' with internal=True active_nav='painel' %}{% else %}{% include 'ui/header.html' with internal=True active_nav='painel' navigation_static=True %}{% endif %}{% endblock %}
 {% block main_class %}qr-width-work qr-reports{% endblock %}
 {% block heading %}
-  <a class="btn btn-link qr-reports-back" role="link" aria-disabled="true" tabindex="0">{% include 'ui/icon.html' with name='arrow-left' only %}Voltar aos equipamentos</a>
+  <a class="btn btn-link qr-reports-back" href="{% url 'paginas:painel' %}">{% include 'ui/icon.html' with name='arrow-left' only %}Voltar aos equipamentos</a>
   {% with identification=equipamento.codigo_patrimonio|default:'equipamento' %}
     {% with title='Relatos de '|add:identification %}
       {% include 'ui/page_heading.html' with title=title subtitle='Selecione os relatos solucionados para conferir a resolução.' icon='monitor' only %}
@@ -18,21 +18,23 @@
   {% if equipamento %}
     {% include 'ui/equipment_card.html' with identification=equipamento.codigo_patrimonio name=equipamento.nome description=equipamento.descricao laboratory=equipamento.local.laboratorio.nome location=equipamento.local.nome inactive=equipment_inactive compact=True only %}
   {% endif %}
+  {% if can_resolve %}<form method="post" action="{% url 'paginas:conferencia' equipamento.pk %}">{% csrf_token %}{% endif %}
   <section class="qr-reports-list" aria-labelledby="relatos-abertos" data-selection-group>
     <h2 id="relatos-abertos">Relatos abertos ({{ reports|length }})</h2>
     {% if reports %}
-      <label class="qr-check qr-reports-select" data-select-all-container hidden>
+      {% if can_resolve or not backend_connected %}<label class="qr-check qr-reports-select" data-select-all-container hidden>
         <input class="form-check-input" type="checkbox" data-select-all>
         <span>Selecionar todos os relatos abertos</span>
-      </label>
+      </label>{% endif %}
       <div>
         {% for report in reports %}
-          {% include 'ui/report_card.html' with report_id=report.id problem=report.problem opened_at=report.opened_at laboratory=report.laboratory description=report.description only %}
+          {% include 'ui/report_card.html' with report_id=report.id problem=report.problem opened_at=report.opened_at laboratory=report.laboratory description=report.description readonly=backend_connected can_resolve=can_resolve only %}
         {% endfor %}
       </div>
-      {% include 'ui/selection_bar.html' with button_type='button' only %}
+      {% if can_resolve %}{% include 'ui/selection_bar.html' with button_type='submit' only %}{% elif not backend_connected %}{% include 'ui/selection_bar.html' with button_type='button' only %}{% endif %}
     {% else %}
       {% include 'ui/empty_state.html' with title='Este equipamento não possui relatos abertos.' icon='monitor' only %}
     {% endif %}
   </section>
+  {% if can_resolve %}</form>{% endif %}
 {% endblock %}

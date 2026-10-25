@@ -30,3 +30,18 @@ class RelatoForm(forms.Form):
         if problema and problema.outro and not dados.get('descricao'):
             self.add_error('descricao', 'Descreva o problema para continuar')
         return dados
+
+
+class SelecaoResolucaoForm(forms.Form):
+    def clean(self):
+        dados = super().clean()
+        valores = self.data.getlist('selecionados')
+        if not valores:
+            raise forms.ValidationError('Selecione pelo menos um relato')
+        if any(not valor.isdecimal() or len(valor) > 18 for valor in valores):
+            raise forms.ValidationError('Seleção inválida')
+        ids = [int(valor) for valor in valores]
+        if any(pk <= 0 for pk in ids) or len(set(ids)) != len(ids):
+            raise forms.ValidationError('Seleção inválida')
+        dados['ids'] = sorted(ids)
+        return dados

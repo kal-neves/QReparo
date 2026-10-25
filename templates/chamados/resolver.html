@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Conferir resolução{% endblock %}
+{% block body_class %}qr-desktop{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/tecnico.css' %}">{% endblock %}
+{% block header %}{% if backend_connected %}{% include 'ui/header.html' with internal=True active_nav='painel' %}{% else %}{% include 'ui/header.html' with internal=True active_nav='painel' navigation_static=True %}{% endif %}{% endblock %}
+{% block main_class %}qr-width-work qr-review{% endblock %}
+{% block heading %}
+  {% if backend_connected %}
+    <a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Voltar aos relatos</a>
+  {% else %}
+    {% include 'ui/inert_link.html' with label='Voltar aos relatos' icon='arrow-left' extra_class='qr-work-back' only %}
+  {% endif %}
+  {% if conflict or uncertain_result %}
+    {% include 'ui/page_heading.html' with title='Conferir resolução' subtitle='Confira a mensagem abaixo antes de continuar.' icon='clipboard' only %}
+  {% else %}
+    {% include 'ui/page_heading.html' with title='Conferir resolução' subtitle='Confira os relatos selecionados e confirme a resolução.' icon='clipboard' only %}
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <div class="qr-stack">
+    {% if selection_error %}<div role="alert">{{ selection_error }}</div>{% endif %}
+    {% if equipamento %}{% include 'ui/equipment_card.html' with identification=equipamento.codigo_patrimonio name=equipamento.nome description=equipamento.descricao laboratory=equipamento.local.laboratorio.nome location=equipamento.local.nome compact=True only %}{% endif %}
+    {% if conflict %}
+      {% include 'ui/alert.html' with kind='danger' title='Não foi possível resolver a seleção.' text='Um ou mais relatos não estão mais disponíveis para resolução. Confira novamente.' icon='warning' only %}
+      {% if affected_reports %}<section class="qr-card"><h2>Relatos afetados ({{ affected_reports|length }})</h2><ul class="mb-0">{% for id in affected_reports %}<li>Relato {{ id }} não está mais aberto.</li>{% endfor %}</ul></section>{% endif %}
+      <div class="qr-card qr-recovery"><p>Nenhum relato desta seleção foi resolvido por esta operação.</p>{% if backend_connected %}<a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Conferir relatos novamente</a>{% else %}{% include 'ui/inert_link.html' with label='Conferir relatos novamente' variant='primary' only %}{% endif %}</div>
+    {% elif uncertain_result %}
+      {% include 'ui/alert.html' with kind='warning' text='Não foi possível confirmar o resultado. Consulte os relatos antes de tentar novamente.' only %}
+      {% if backend_connected %}<a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Conferir relatos novamente</a>{% else %}{% include 'ui/inert_link.html' with label='Conferir relatos novamente' variant='primary' only %}{% endif %}
+    {% elif rows %}
+      <p class="qr-muted">Você selecionou {{ rows|length }} {% if rows|length == 1 %}relato{% else %}relatos{% endif %} deste equipamento.</p>
+      {% include 'ui/table.html' with caption='Relatos selecionados para conferência' rows=rows columns=columns multiline_column=3 only %}
+      {% include 'ui/alert.html' with kind='warning' text='Ao confirmar, estes relatos serão marcados como resolvidos e suas descrições serão apagadas. Permanecerão apenas os dados técnicos mínimos para contagem. Esta ação não pode ser desfeita nesta versão.' only %}
+      {% if backend_connected %}<form method="post" action="{% url 'paginas:resolver' equipamento.pk %}">{% csrf_token %}<input type="hidden" name="selection_token" value="{{ selection_token }}">{% endif %}
+      <div class="qr-work-actions">
+        {% if backend_connected %}<a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Alterar seleção</a>{% else %}{% include 'ui/inert_link.html' with label='Alterar seleção' only %}{% endif %}
+        {% with count=rows|length|stringformat:'s' %}{% with label='Confirmar resolução de '|add:count %}
+          {% if rows|length == 1 %}{% include 'ui/button.html' with label=label|add:' relato' type='submit' only %}{% else %}{% include 'ui/button.html' with label=label|add:' relatos' type='submit' only %}{% endif %}
+        {% endwith %}{% endwith %}
+      </div>
+      {% if backend_connected %}</form>{% endif %}
+    {% else %}
+      {% include 'ui/alert.html' with kind='warning' text='Selecione pelo menos um relato.' only %}
+      {% if backend_connected %}<a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Voltar aos relatos</a>{% else %}{% include 'ui/inert_link.html' with label='Voltar aos relatos' only %}{% endif %}
+    {% endif %}
+  </div>
+{% endblock %}

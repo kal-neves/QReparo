@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Contagem técnica{% endblock %}
+{% block body_class %}qr-desktop{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/tecnico.css' %}">{% endblock %}
+{% block header %}{% if backend_connected %}{% include 'ui/header.html' with internal=True active_nav='contagem' %}{% else %}{% include 'ui/header.html' with internal=True active_nav='contagem' navigation_static=True %}{% endif %}{% endblock %}
+{% block main_class %}qr-width-work qr-counts{% endblock %}
+{% block heading %}{% include 'ui/page_heading.html' with title='Contagem técnica' subtitle='Quantidade de relatos por equipamento e tipo de problema. Relatos não representam necessariamente defeitos distintos.' icon='table' only %}{% endblock %}
+{% block content %}
+  {% if rows %}
+    {% include 'ui/table.html' with caption='Contagem por laboratório no envio, equipamento e problema' rows=rows columns=columns numeric_from=4 totals=totals total_label_span=3 only %}
+  {% else %}
+    {% include 'ui/empty_state.html' with title='Ainda não há relatos para contabilizar.' icon='table' only %}
+  {% endif %}
+{% endblock %}

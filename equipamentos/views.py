@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Count, Q
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
@@ -44,7 +44,7 @@ def equipamento_list_view(request):
             'total_chamados_abertos': eq.abertos,
         } for eq in equipamentos]
         return JsonResponse({'equipamentos': dados, 'total': len(dados)})
-    return render(request, 'equipamentos/lista.html', {'equipamentos': equipamentos})
+    return redirect('paginas:painel')
 
 
 @never_cache
@@ -61,7 +61,7 @@ def equipamento_detail_view(request, pk):
             'chamados': [{'id': ch.pk, 'problema': ch.problema.nome, 'descricao': ch.descricao,
                           'data_abertura': ch.data_abertura} for ch in chamados],
         })
-    return render(request, 'equipamentos/detalhes.html', {'equipamento': equipamento, 'chamados': chamados})
+    return redirect('paginas:relatos_equipamento', pk=pk)
 
 
 @require_http_methods(['GET'])

@@ -92,26 +92,14 @@ class AdaptacaoTests(TestCase):
             self.assertIn('no-store', resposta['Cache-Control'])
             self.assertEqual(resposta['Referrer-Policy'], 'no-referrer')
 
-    def test_resolucao_individual_limpa_texto_e_mantem_demais_relatos(self):
-        primeiro, segundo = self.relato(), self.relato()
+    def test_endpoint_antigo_nao_contorna_conferencia(self):
+        relato = self.relato()
         self.client.force_login(self.tecnico)
-        url = f'/chamados/api/{primeiro.pk}/status/'
-        self.assertEqual(self.client.post(url, {'status': 'RESOLVIDO'}).status_code, 200)
-        primeiro.refresh_from_db()
-        segundo.refresh_from_db()
-        self.assertEqual(primeiro.descricao, '')
-        self.assertTrue(primeiro.conteudo_removido)
-        self.assertIsNotNone(primeiro.data_conclusao)
-        self.assertEqual(segundo.status, Chamado.ABERTO)
-        self.assertEqual(self.eq.total_chamados, 2)
-        self.assertEqual(self.eq.total_chamados_abertos, 1)
-        self.assertEqual(self.client.get(f'/chamados/api/{primeiro.pk}/').status_code, 404)
-        self.assertEqual(self.client.post(url, {'status': 'RESOLVIDO'}).status_code, 409)
-        for status in ['ABERTO', 'EM_ATENDIMENTO', 'CANCELADO']:
-            self.assertEqual(self.client.post(url, {'status': status}).status_code, 400)
-        self.client.post(f'/chamados/api/{segundo.pk}/status/', {'status': 'RESOLVIDO'})
-        self.assertEqual(self.client.get('/equipamentos/api/').json()['equipamentos'], [])
-        self.assertTrue(Equipamento.objects.filter(pk=self.eq.pk).exists())
+        url = f'/chamados/api/{relato.pk}/status/'
+        self.assertEqual(self.client.post(url, {'status': 'RESOLVIDO'}).status_code, 410)
+        relato.refresh_from_db()
+        self.assertEqual(relato.status, Chamado.ABERTO)
+        self.assertEqual(relato.descricao, 'Texto privado')
 
     def test_somente_leitura_nao_pode_resolver(self):
         user = get_user_model().objects.create_user(username='leitura')

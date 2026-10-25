@@ -4,6 +4,7 @@ from .acesso import EntradaView
 from .paginas import pagina
 from equipamentos.views import etiqueta
 from chamados.views import novo_relato
+from chamados import atendimento
 
 app_name = 'paginas'
 
@@ -14,21 +15,10 @@ urlpatterns = [
     }, name='confirmacao'),
     path('entrar/', EntradaView.as_view(), name='entrada'),
     path('sair/', LogoutView.as_view(), name='saida'),
-    path('tecnico/', pagina, {
-        'template_name': 'chamados/painel.html', 'titulo': 'Equipamentos com chamados',
-        'permissao': 'chamados.view_chamado',
-    }, name='painel'),
-    path('tecnico/equipamentos/<int:pk>/', pagina, {
-        'template_name': 'chamados/detalhe.html', 'titulo': 'Relatos do equipamento',
-        'permissao': 'chamados.view_chamado',
-    }, name='relatos_equipamento'),
-    path('tecnico/equipamentos/<int:pk>/conferencia/', pagina, {
-        'template_name': 'chamados/resolver.html', 'titulo': 'Conferência da resolução',
-        'permissao': ('chamados.view_chamado', 'chamados.change_chamado'),
-    }, name='conferencia'),
-    path('tecnico/contagem/', pagina, {
-        'template_name': 'chamados/contagem.html', 'titulo': 'Contagem técnica',
-        'permissao': 'chamados.view_chamado',
-    }, name='contagem'),
+    path('tecnico/', atendimento.painel, name='painel'),
+    path('tecnico/equipamentos/<int:pk>/', atendimento.detalhe, name='relatos_equipamento'),
+    path('tecnico/equipamentos/<int:pk>/conferencia/', atendimento.conferencia, name='conferencia'),
+    path('tecnico/equipamentos/<int:pk>/resolver/', atendimento.resolver, name='resolver'),
+    path('tecnico/contagem/', atendimento.contagem, name='contagem'),
     path('equipamentos/<int:pk>/etiqueta/', etiqueta, name='etiqueta'),
 ]

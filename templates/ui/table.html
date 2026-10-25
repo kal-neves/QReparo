@@ -4,9 +4,10 @@
     <caption class="visually-hidden">{{ caption }}</caption>
     <thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}{% if actions %}<th scope="col">Ação</th>{% endif %}</tr></thead>
     <tbody>{% for row in rows %}<tr>
-      {% for cell in row.cells %}{% if forloop.first %}<th scope="row">{% if equipment_cells %}<div class="qr-table-equipment"><span class="qr-icon-disc">{% include 'ui/icon.html' with name=row.icon only %}</span><span>{{ cell }}<span class="qr-table-description">{{ row.description }}</span></span></div>{% else %}{{ cell }}{% endif %}</th>{% else %}<td>{% if count_badge and forloop.last %}{% include 'ui/badge.html' with label=cell kind='count' only %}{% else %}{{ cell }}{% endif %}</td>{% endif %}{% endfor %}
+      {% for cell in row.cells %}{% if forloop.first %}<th scope="row">{% if equipment_cells %}<div class="qr-table-equipment"><span class="qr-icon-disc">{% include 'ui/icon.html' with name=row.icon only %}</span><span>{{ cell }}<span class="qr-table-description">{{ row.description }}</span></span></div>{% else %}{{ cell }}{% endif %}</th>{% else %}<td>{% if numeric_from and forloop.counter >= numeric_from %}{% include 'ui/badge.html' with label=cell kind='count' only %}{% elif multiline_column == forloop.counter %}{{ cell|linebreaksbr }}{% elif count_badge and forloop.last %}{% include 'ui/badge.html' with label=cell kind='count' only %}{% else %}{{ cell }}{% endif %}</td>{% endif %}{% endfor %}
       {% if actions %}<td>{% if actions_static %}<a class="btn btn-primary" role="link" aria-disabled="true" tabindex="0">{{ row.action_label }}<span class="visually-hidden"> — {{ row.cells.0 }}</span></a>{% elif row.url %}<a class="btn btn-primary" href="{{ row.url }}">{{ row.action_label }}<span class="visually-hidden"> — {{ row.cells.0 }}</span></a>{% else %}—{% endif %}</td>{% endif %}
     </tr>{% endfor %}</tbody>
+    {% if totals %}<tfoot><tr><th scope="row" colspan="{{ total_label_span|default:1 }}">Total geral</th>{% for total in totals %}<td>{% include 'ui/badge.html' with label=total kind='count' only %}</td>{% endfor %}</tr></tfoot>{% endif %}
   </table>
 </div>
 {% else %}{% include "ui/empty_state.html" with title=empty_title|default:"Nenhum registro disponível." only %}{% endif %}

@@ -15,8 +15,8 @@
       </nav>
       {% if navigation_static %}
         <div class="qr-session">{% include 'ui/button.html' with label='Sair' icon='logout' variant='outline-primary' only %}</div>
-      {% elif logout_url %}
-        <form class="qr-session" method="post" action="{{ logout_url }}">{% csrf_token %}
+      {% elif user.is_authenticated %}
+        <form class="qr-session" method="post" action="{% url 'paginas:saida' %}">{% csrf_token %}
           {% include "ui/button.html" with label="Sair" icon="logout" variant="outline-primary" type="submit" %}
         </form>
       {% endif %}

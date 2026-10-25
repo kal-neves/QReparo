@@ -33,7 +33,7 @@ class InterfaceTests(SimpleTestCase):
         self.assertIn('aria-current="page"', html)
         self.assertIn('Contagem técnica', html)
         self.assertNotIn('Cadastros', html)
-        self.assertNotIn('Sair', html)  # Endpoint ainda não fornecido.
+        self.assertIn('Sair', html)
         admin = self.render_header(user_with(staff=True), internal=True, logout_url='/sair/')
         self.assertIn('Cadastros', admin)
         self.assertNotIn('Contagem técnica', admin)

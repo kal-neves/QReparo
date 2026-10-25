@@ -15,12 +15,18 @@ o cadastro de equipamentos e o fluxo público de relato já estão conectados ao
 
 o endereço configurado para as etiquetas precisa ser acessível pelo celular e permitido em `DJANGO_ALLOWED_HOSTS`
 
-login da aplicação, painel com dados reais, conferência em lote e contagem ainda estão em desenvolvimento
+o login da aplicação está disponível em `/entrar/` e a saída usa post com csrf em `/sair/`
+
+para preparar um técnico, crie uma conta no admin e atribua as permissões `view_chamado` e `change_chamado`, diretamente ou por grupo
+
+a permissão `view_equipamento` permite gerar etiquetas e o acesso ao admin depende também de `is_staff`
+
+painel com dados reais, conferência em lote e contagem ainda estão em desenvolvimento
 
 para verificar o backend, configure as variáveis `POSTGRES_*` para um banco de desenvolvimento e execute
 
 ```powershell
-.\.venv\Scripts\python.exe manage.py test equipamentos chamados config.test_ui
+.\.venv\Scripts\python.exe manage.py test equipamentos chamados config
 .\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
 ```
 

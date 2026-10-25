@@ -8,6 +8,7 @@
 {% block heading %}{% endblock %}
 {% block content %}
   <section class="qr-card qr-login" aria-label="Entrada técnica">
+    {% if form %}<form method="post" action="{% url 'paginas:entrada' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     {% include 'ui/page_heading.html' with title='Área técnica' subtitle='Entre com a conta fornecida pela equipe responsável.' icon='lock' only %}
     {% if login_error %}
       <div class="mb-4" tabindex="-1" data-error-summary>
@@ -20,7 +21,12 @@
     {% include 'ui/input.html' with input_id='login-username' name='username' label='Usuário' autocomplete='username' placeholder='Digite seu usuário' required=True value=username only %}
     {% include 'ui/input.html' with input_id='login-password' name='password' label='Senha' type='password' autocomplete='current-password' placeholder='Digite sua senha' required=True only %}
     <div class="mt-4">
-      {% include 'ui/button.html' with label='Entrar' extra_class='w-100' only %}
+      {% if not form %}
+        {% include 'ui/button.html' with label='Entrar' extra_class='w-100' only %}
+      {% else %}
+        {% include 'ui/button.html' with label='Entrar' type='submit' extra_class='w-100' only %}
+      {% endif %}
     </div>
+    {% if form %}</form>{% endif %}
   </section>
 {% endblock %}

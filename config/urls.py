@@ -3,6 +3,10 @@ from django.conf import settings
 from django.urls import include, path
 from .paginas import inicio
 
+handler403 = 'config.erros.acesso_negado'
+handler404 = 'config.erros.nao_encontrado'
+handler500 = 'config.erros.erro_interno'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('config.urls_paginas')),

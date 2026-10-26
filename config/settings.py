@@ -108,3 +108,4 @@ SECURE_REFERRER_POLICY = 'no-referrer'
 QREPARO_PUBLIC_URL = os.environ.get('QREPARO_PUBLIC_URL', '')
 LOGIN_URL = 'paginas:entrada'
 LOGOUT_REDIRECT_URL = 'paginas:entrada'
+CSRF_FAILURE_VIEW = 'config.erros.csrf_rejeitado'

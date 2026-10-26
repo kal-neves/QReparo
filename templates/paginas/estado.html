@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ state_title }}{% endblock %}
+{% block body_class %}{% if technical %}qr-desktop{% else %}qr-public{% endif %}{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/estados.css' %}">{% endblock %}
+{% block header %}
+  {% if backend_connected %}
+    {% if minimal_header %}{% include 'ui/header.html' with internal=False hide_technical_access=True %}
+    {% else %}{% include 'ui/header.html' with internal=technical %}{% endif %}
+  {% else %}
+  {% if minimal_header %}
+    {% if show_exit %}{% include 'ui/header.html' with internal=True navigation_static=True perms=None user=None only %}
+    {% else %}{% include 'ui/header.html' with internal=False hide_technical_access=True only %}{% endif %}
+  {% else %}{% include 'ui/header.html' with internal=technical navigation_static=True %}{% endif %}
+  {% endif %}
+{% endblock %}
+{% block main_class %}qr-width-form qr-state-main{% endblock %}
+{% block heading %}{% endblock %}
+{% block content %}
+  <section class="qr-card qr-state" aria-label="{{ state_title }}">
+    {% include 'ui/page_heading.html' with title=state_title subtitle=state_text icon=state_icon only %}
+    {% if state_detail %}<p class="qr-muted">{{ state_detail }}</p>{% endif %}
+    {% if backend_connected and show_exit %}
+      <form method="post" action="{% url 'paginas:saida' %}">{% csrf_token %}
+        {% include 'ui/button.html' with label='Sair' type='submit' variant='outline-primary' only %}
+      </form>
+    {% endif %}
+    {% if action_url %}{% include 'ui/button.html' with href=action_url label=action_label variant='primary' only %}
+    {% elif action_label %}{% include 'ui/inert_link.html' with label=action_label variant='primary' only %}{% endif %}
+  </section>
+{% endblock %}

@@ -46,6 +46,44 @@ os testes usam um banco separado criado pelo django e exigem permissão para cri
 
 não use credenciais de produção para executar os testes
 
+## Erros e migração de dados antigos
+
+Com `DJANGO_DEBUG=false`, as páginas de acesso negado, endereço inexistente,
+falha de envio por CSRF e erro interno mostram uma mensagem simples, sem expor
+senhas, conteúdo enviado ou detalhes da exceção. A página de erro interno pode
+ser exibida mesmo quando não é possível consultar o usuário, a sessão ou o banco.
+Se ocorrer uma falha ao resolver relatos, consulte o painel antes de tentar novamente.
+
+Antes de aplicar migrações a um banco antigo, faça um backup e ensaie a atualização
+em uma cópia separada. As migrações `0002_mvp_facil` removem campos antigos e não
+podem ser desfeitas automaticamente. Elas mantêm os relatos abertos e apagam o
+texto dos resolvidos e os antigos registros de auditoria de chamados no Admin.
+Relatos cancelados, estados desconhecidos e descrições abertas acima de 250
+caracteres interrompem a conversão e precisam de revisão antes de continuar.
+
+Equipamentos antigos recebem um laboratório identificado como `LEGADO-REVISAR`.
+Revise esses cadastros após a migração. Uma data de conclusão preenchida pela
+conversão pode vir da última atualização antiga; ela não comprova a data do reparo.
+
+O teste `chamados.test_migracoes` cria e remove seu próprio banco temporário,
+além do banco de testes normal do Django. Ele também exige permissão para criar
+bancos e nunca deve usar uma conta de produção.
+
+## Verificação da entrega atual
+
+Em 26/10/2026, os 51 testes de `equipamentos`, `chamados` e `config` passaram
+em uma instância PostgreSQL isolada, com Python 3.14.6 e Django 6.1.1.
+Foram verificados envio, permissões, etiquetas, resolução parcial, concorrência,
+rollback, descarte do texto, contagem, migração antiga e páginas de erro.
+
+Ainda faltam as verificações manuais para considerar o MVP fácil entregue:
+
+- Imprimir e escanear as duas etiquetas em um celular, conferindo equipamento e laboratório.
+- Enviar um relato pelo celular e percorrer o atendimento até a contagem final.
+- Repetir o fluxo por teclado e sem JavaScript, nos navegadores previstos.
+- Conferir o fluxo público nas larguras de 360 a 1920 pixels e as telas técnicas em desktop.
+- Medir as metas de tempo de resposta e de uso com participantes, conforme o plano.
+
 Aplicação Django para registrar e acompanhar problemas em equipamentos de laboratórios universitários por QR Code.
 
 ## Instalação para desenvolvimento

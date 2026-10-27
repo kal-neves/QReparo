@@ -82,3 +82,45 @@ class InterfaceTests(SimpleTestCase):
         finally:
             reload(config.urls)
             clear_url_caches()
+
+
+class RemainingPreviewTests(SimpleTestCase):
+    def render_preview(self, screen, state='', **params):
+        from .ui_preview import preview
+        request = RequestFactory().get('/_ui/', {'tela': screen, 'estado': state, **params})
+        return preview(request)
+
+    def test_preview_states_render_without_database_or_mutating_forms(self):
+        cases = {
+            'conferencia': ('', 'unico', 'conflito', 'falha', 'vazio'),
+            'contagem': ('', 'vazio'),
+            'erro': ('acesso', 'pagina', 'formulario', 'interno', 'equipamento', 'inativo'),
+        }
+        for screen, states in cases.items():
+            for state in states:
+                with self.subTest(screen=screen, state=state):
+                    response = self.render_preview(screen, state)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertNotContains(response, '<form')
+                    self.assertNotContains(response, 'name="selection_token"')
+        from .ui_preview import preview
+        response = preview(RequestFactory().post('/_ui/?tela=conferencia'))
+        self.assertEqual(response.status_code, 405)
+
+    def test_review_exception_states_do_not_show_descriptions_or_confirmation(self):
+        for state in ('conflito', 'falha', 'vazio'):
+            with self.subTest(state=state):
+                response = self.render_preview('conferencia', state)
+                self.assertNotContains(response, 'A luz de energia permanece apagada.')
+                self.assertNotContains(response, 'Confirmar resolução de')
+        response = self.render_preview('conferencia', 'unico')
+        self.assertContains(response, 'Confirmar resolução de 1 relato')
+        self.assertNotContains(response, 'Teclado/mouse')
+
+    def test_counts_and_error_variants(self):
+        self.assertContains(self.render_preview('contagem'), 'Total geral')
+        self.assertNotContains(self.render_preview('contagem', 'vazio'), '<table')
+        for state in ('pagina', 'interno'):
+            self.assertContains(self.render_preview('erro', state), 'class="qr-public"')
+            self.assertContains(self.render_preview('erro', state, perfil='tecnico'), 'class="qr-desktop"')
+        self.assertContains(self.render_preview('erro', 'desconhecido'), 'Página não encontrada')

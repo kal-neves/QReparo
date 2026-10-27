@@ -163,13 +163,13 @@ scripts consulta APIs ou persiste descrições no navegador.
 Use `internal=True` para navegação interna e `desktop=True` para páginas técnicas
 com header público, como a entrada. As telas técnicas têm alvo desktop; as páginas
 do aluno mantêm adaptação móvel. O header público permanece público mesmo com uma
-sessão técnica. `logout_url` deve receber um endpoint POST de logout quando esse
-fluxo for implementado; enquanto ausente, o componente não cria uma ação falsa.
+sessão técnica. O fluxo real usa POST em `/sair/`, com CSRF, para encerrar a
+sessão Django. No catálogo visual, o logout permanece inerte.
 
 Com `DEBUG=True`, `/_ui/` exibe o catálogo visual com exemplos fictícios, sem
-operações de negócio. Essa rota não existe com `DEBUG=False`. Os placeholders
-das rotas de tela agora usam a base compartilhada; as telas e suas integrações
-continuam pendentes. Validar os includes com `manage.py test config.test_ui` e
+operações de negócio. Essa rota não existe com `DEBUG=False`. As rotas reais já
+usam a base compartilhada e estão integradas ao backend; as prévias continuam
+independentes dos dados reais. Validar os includes com `manage.py test config.test_ui` e
 conferir visualmente o catálogo no desktop e os componentes públicos em 360 px.
 
 ### Validação do fluxo completo
@@ -184,7 +184,9 @@ Com `DEBUG=True`, abrir `/_ui/?tela=etiqueta`; usar `&estado=inativo` para o avi
 de equipamento desativado. São dados fictícios e uma imagem estática de QR Code
 ilustrativo, sem consulta ao banco, geração de etiquetas reais ou logout.
 O template reutiliza os componentes comuns e possui CSS próprio de impressão.
-Na rota definitiva, os dados ainda dependem de integração futura.
+A rota real `/equipamentos/<pk>/etiqueta/` consulta o equipamento e gera o QR
+Code, exigindo `equipamentos.view_equipamento`. A origem do link vem de
+`QREPARO_PUBLIC_URL`, que precisa estar configurada.
 
 ### Prévia visual do formulário do aluno
 
@@ -200,14 +202,19 @@ O header público permanece igual mesmo com uma sessão técnica.
 ### Tela de confirmação
 
 `/recebido/` renderiza `chamados/confirmacao.html`, com header público sem o link “Área técnica”, card de
-sucesso e footer compartilhados. Esta entrega contém somente a interface;
-não confirma persistência nem conecta o botão de envio a essa rota. A tela não
+sucesso e footer compartilhados. O envio válido em `/e/<uuid:token>/` persiste o
+relato e redireciona para essa rota. Abrir `/recebido/` diretamente não comprova
+que houve um envio. A tela não
 exibe dados do relato, acompanhamento, reenvio ou avisos de implementação.
 
 ### Tela de entrada técnica
 
-`/entrar/` apresenta a interface desktop com campos de usuário e senha e botão
-“Entrar” sem ação. Não há formulário de envio, autenticação ou alteração de sessão.
+`/entrar/` usa `EntradaView`, baseada em `LoginView` do Django, com formulário
+POST, CSRF, autenticação e sessão reais. Após o login, a conta é encaminhada
+conforme suas permissões. O Django Admin em `/admin/` usa as mesmas contas Django;
+acesso administrativo exige conta ativa com `is_staff`, enquanto a área técnica
+exige as permissões de chamados. Um superusuário ativo possui essas permissões.
+A conta de teste local é um registro no banco, não uma conta padrão do código.
 Os campos reutilizam `ui/input.html` (label, ID, tipo, autocomplete e obrigatoriedade);
 campos de senha nunca recebem valor inicial. O header, título, alertas, botão e
 footer também são compartilhados. Em `DEBUG`, `/_ui/?tela=entrada&estado=erro`
@@ -223,8 +230,9 @@ O painel reutiliza header, título, tabela, badges, ícones e estado vazio. A ta
 aceita `equipment_cells`, `count_badge` e `actions_static`; o header aceita
 `navigation_static` para mostrar ações sem destino durante a etapa de interface.
 Os links de navegação, “Ver relatos” e “Sair” permanecem sem ação nesta tela.
-A rota técnica existente mantém sua autorização; a integração dos registros segue
-pendente. O contador indica equipamentos distintos, não a soma dos relatos.
+A rota real `/tecnico/` exige autorização e consulta os equipamentos com relatos
+abertos por meio de `chamados.atendimento.painel`. O contador indica equipamentos
+distintos, não a soma dos relatos.
 
 ### Relatos do equipamento — interface
 
@@ -233,7 +241,51 @@ Em `DEBUG`, `/_ui/?tela=relatos` exibe os cards com dados fixos; estados opciona
 ou alteração de registros. A seleção individual, selecionar todos e o contador
 reutilizam `ui.js`, sem persistência. `ui/selection_bar.html` aceita
 `button_type='button'` para manter “Conferir resolução” sem envio; o padrão continua
-`submit` para integração futura. Sem JavaScript, a seleção individual permanece
-utilizável e o botão continua sem ação. Navegação e logout também são inertes.
+`submit`, usado pelo fluxo real. Na prévia, sem JavaScript, a seleção individual
+permanece utilizável e o botão continua sem ação; navegação e logout também são
+inertes. Na rota real `/tecnico/equipamentos/<pk>/`, os relatos vêm do banco e a
+seleção é enviada por POST à conferência, com autenticação, permissões e CSRF.
 Os cards mostram o laboratório no envio separadamente da localização atual e
 preservam quebras de linha; descrições ausentes usam “Sem descrição adicional”.
+
+### Conferência, contagem e estados de exceção — interface
+
+Todas as páginas customizadas do MVP fácil possuem composição visual. Os cadastros
+continuam no Django Admin nativo. As limitações das prévias não se aplicam às rotas reais.
+
+`chamados/atendimento.py` implementa o fluxo técnico: a conferência valida a
+seleção e gera um token assinado vinculado à sessão; a resolução revalida os
+relatos e apaga suas descrições em transação; `/tecnico/contagem/` consulta os
+registros preservados. Consultar exige `chamados.view_chamado`; conferir e resolver
+exigem também `chamados.change_chamado`.
+
+No catálogo `/_ui/` com `DEBUG=True`:
+
+| Parâmetros | Tela / estados |
+| --- | --- |
+| `?tela=conferencia` | Conferência de dois relatos selecionados |
+| `?tela=conferencia&estado=unico` | Seleção de um relato, textos no singular |
+| `?tela=conferencia&estado=conflito` | Seleção inválida, sem confirmar nem revelar descrições removidas |
+| `?tela=conferencia&estado=falha` | Resultado desconhecido, orienta consultar antes de repetir |
+| `?tela=conferencia&estado=vazio` | Seleção vazia, sem ação de resolução |
+| `?tela=contagem` / `&estado=vazio` | Contagem com totais fictícios / estado vazio |
+| `?tela=erro&estado=acesso` | Acesso negado, marca e botão Sair inerte |
+| `?tela=erro&estado=pagina` | Página não encontrada |
+| `?tela=erro&estado=formulario` | Formulário expirado ou requisição rejeitada |
+| `?tela=erro&estado=interno` | Erro interno com header mínimo |
+| `?tela=erro&estado=equipamento` / `inativo` | QR inválido / equipamento indisponível |
+
+Nos estados de página inexistente e erro interno, `&perfil=tecnico` mostra a
+variante desktop interna; o padrão é público e responsivo. O estado de sessão
+expirada continua em `?tela=entrada&estado=expirada`. Não há avisos de implementação
+nas telas. No catálogo, os controles de navegação/recuperação são inertes e não
+persistem nada. Nas rotas reais, `config/urls.py` registra os handlers 403, 404 e
+500 de `config/erros.py`, e `CSRF_FAILURE_VIEW` aponta para `csrf_rejeitado`.
+Com `DEBUG=True`, o Django pode mostrar páginas de diagnóstico para 404/500;
+validar os handlers customizados também com `DEBUG=False`.
+
+`ui/inert_link.html` padroniza links sem destino nas prévias. `ui/table.html`
+aceita `multiline_column` para preservar quebras de linha, `numeric_from` para
+badges numéricos e `totals`/`total_label_span` para o rodapé. Textos continuam
+escapados. `paginas/estado.html` compõe os estados com header, título, ícone e
+footer compartilhados sem mostrar URLs ou mensagens de erro recebidas do usuário.

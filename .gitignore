@@ -13,6 +13,7 @@ wheels/
 !.env.example
 midia_privada/
 staticfiles/
+.local/
 *.sqlite3
 
 guidelines/

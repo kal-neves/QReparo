@@ -47,8 +47,70 @@ def report_preview(request):
     })
 
 
+# Fixtures de apresentação: nenhum dado abaixo vem de modelos ou de envios.
+def remaining_preview(request, screen):
+    state = request.GET.get('estado', '')
+    technical = request.GET.get('perfil') == 'tecnico'
+    navigation = {'perms': {'chamados': {'view_chamado': True}}, 'user': {'is_staff': True}}
+    equipment = {'codigo_patrimonio': 'PC-01', 'nome': 'Computador Lenovo',
+                 'descricao': 'Computador de uso acadêmico',
+                 'local': {'nome': 'Bancada A · Posição 01',
+                           'laboratorio': {'nome': 'Laboratório 01 — Informática'}}}
+    if screen == 'conferencia':
+        rows = [
+            {'cells': ['101', 'Não liga', 'O computador não liga, mesmo conectado à tomada.\nA luz de energia permanece apagada.', 'Lab. 01 — Informática', '09/10/2026 09:15']},
+            {'cells': ['102', 'Teclado/mouse', 'Sem descrição adicional', 'Lab. 01 — Informática', '10/10/2026 10:30']},
+        ]
+        return render(request, 'chamados/resolver.html', {
+            **navigation, 'equipamento': equipment,
+            'rows': [] if state in ('vazio', 'conflito', 'falha') else rows[:1] if state == 'unico' else rows,
+            'columns': ['Relato', 'Problema', 'Descrição', 'Laboratório no envio', 'Aberto em'],
+            'conflict': state == 'conflito', 'affected_reports': ['101'] if state == 'conflito' else [],
+            'uncertain_result': state == 'falha',
+        })
+    if screen == 'contagem':
+        rows = [
+            {'cells': ['Lab. 01 — Informática', 'PC-01', 'Não liga', 1, 2, 3]},
+            {'cells': ['Lab. 01 — Informática', 'PC-01', 'Outro problema', 1, 0, 1]},
+            {'cells': ['Lab. 01 — Informática', 'PC-01', 'Teclado/mouse', 1, 1, 2]},
+            {'cells': ['Lab. 01 — Informática', 'PC-12', 'Lentidão', 4, 2, 6]},
+            {'cells': ['Lab. 02 — Multimídia', 'PRJ-03', 'Monitor', 2, 1, 3]},
+            {'cells': ['Lab. 03 — Informática', 'IMP-01', 'Impressora', 5, 3, 8]},
+            {'cells': ['Lab. 04 — Redes', 'AC-02', 'Outro problema', 1, 0, 1]},
+            {'cells': ['Lab. 05 — Biologia', 'MIC-01', 'Outro problema', 1, 1, 2]},
+        ]
+        return render(request, 'chamados/contagem.html', {
+            **navigation, 'rows': [] if state == 'vazio' else rows, 'totals': [16, 10, 26],
+            'columns': ['Laboratório no envio', 'Equipamento', 'Problema', 'Abertos', 'Resolvidos', 'Total'],
+        })
+    states = {
+        'acesso': {'state_title': 'Acesso não permitido',
+                   'state_text': 'Sua conta não tem permissão para acessar esta página.',
+                   'state_icon': 'lock', 'minimal_header': True, 'show_exit': True, 'technical': True},
+        'pagina': {'state_title': 'Página não encontrada',
+                   'state_text': 'Não encontramos a página que você tentou acessar.',
+                   'state_icon': 'file-question',
+                   'action_label': 'Voltar aos equipamentos' if technical else 'Ir para a área técnica'},
+        'formulario': {'state_title': 'Não foi possível enviar',
+                       'state_text': 'Abra o formulário novamente e tente de novo.',
+                       'state_icon': 'clock', 'action_label': 'Abrir formulário novamente', 'technical': False},
+        'interno': {'state_title': 'Não foi possível concluir',
+                    'state_text': 'Tente novamente mais tarde.', 'state_icon': 'warning', 'minimal_header': True,
+                    'state_detail': 'Consulte o estado atual dos relatos antes de repetir a operação.' if technical else ''},
+        'equipamento': {'state_title': 'Equipamento não encontrado',
+                        'state_text': 'Confira se você escaneou a etiqueta correta.', 'state_icon': 'monitor', 'technical': False},
+        'inativo': {'state_title': 'Equipamento indisponível',
+                    'state_text': 'Este equipamento não está recebendo novos relatos.', 'state_icon': 'monitor', 'technical': False},
+    }
+    return render(request, 'paginas/estado.html', {
+        **navigation, 'technical': technical, **states.get(state, states['pagina']),
+    })
+
+
 @require_safe
 def preview(request):
+    if request.GET.get('tela') in ('conferencia', 'contagem', 'erro'):
+        return remaining_preview(request, request.GET['tela'])
     if request.GET.get('tela') == 'relatos':
         estado = request.GET.get('estado', '')
         reports = [

@@ -1,149 +1,63 @@
 # QReparo
 
-## backend em desenvolvimento
+Aplicação Django com PostgreSQL para registrar problemas em equipamentos de laboratórios universitários por QR Code.
 
-o cadastro de equipamentos e o fluxo público de relato já estão conectados ao banco
+O aluno envia um relato sem criar conta. O técnico consulta os relatos por equipamento, confere quais foram solucionados e confirma a resolução. Ao resolver, o sistema apaga a descrição e preserva os dados técnicos necessários para a contagem.
 
-- cadastre laboratórios, locais, equipamentos e problemas no admin
-- a identificação do equipamento pode ser um código interno, sem patrimônio institucional
-- preencha a descrição do equipamento e mantenha cada local no seu laboratório original
-- para mover um equipamento, escolha outro local no cadastro do equipamento
-- execute `python manage.py seed_qreparo` para preparar dois equipamentos de exemplo
-- configure `QREPARO_PUBLIC_URL` com a origem da aplicação, como `https://qreparo.example`
-- abra o equipamento no admin e use o link de etiqueta
-- o qr abre um formulário público com um problema e descrição opcional, obrigatória para outro problema
+Esta versão implementa o MVP fácil. A validação manual da entrega ainda está pendente.
 
-o endereço configurado para as etiquetas precisa ser acessível pelo celular e permitido em `DJANGO_ALLOWED_HOSTS`
+## Requisitos
 
-o login da aplicação está disponível em `/entrar/` e a saída usa post com csrf em `/sair/`
+- Python 3.14.6 ou superior
+- PostgreSQL com um banco e um usuário para a aplicação
+- Acesso à internet para instalar as dependências
+- Suporte a `venv` instalado no sistema, se necessário no Linux
 
-para preparar um técnico, crie uma conta no admin e atribua as permissões `view_chamado` e `change_chamado`, diretamente ou por grupo
+## Instalação
 
-a permissão `view_equipamento` permite gerar etiquetas e o acesso ao admin depende também de `is_staff`
+Na pasta do projeto, execute o instalador.
 
-o painel mostra equipamentos com relatos abertos, inclusive equipamentos desativados que ainda precisam de atendimento
-
-selecione os relatos de um equipamento, confira a seleção e confirme a resolução
-
-se algum relato já tiver sido resolvido, o lote inteiro é recusado e exige nova conferência
-
-a resolução apaga a descrição na mesma transação e mantém os dados técnicos usados na contagem
-
-o endpoint antigo de resolução individual em `/chamados/api/<id>/status/` retorna 410 para contas autorizadas e não altera registros
-
-use o fluxo de seleção e conferência da área técnica para resolver relatos
-
-a validação no celular, a leitura das etiquetas impressas e as metas de qualidade ainda precisam de verificação manual
-
-para verificar o backend, configure as variáveis `POSTGRES_*` para um banco de desenvolvimento e execute
+**Windows:**
 
 ```powershell
-.\.venv\Scripts\python.exe manage.py test equipamentos chamados config
-.\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
-```
-
-os testes usam um banco separado criado pelo django e exigem permissão para criar bancos no postgres
-
-não use credenciais de produção para executar os testes
-
-## Erros e migração de dados antigos
-
-Com `DJANGO_DEBUG=false`, as páginas de acesso negado, endereço inexistente,
-falha de envio por CSRF e erro interno mostram uma mensagem simples, sem expor
-senhas, conteúdo enviado ou detalhes da exceção. A página de erro interno pode
-ser exibida mesmo quando não é possível consultar o usuário, a sessão ou o banco.
-Se ocorrer uma falha ao resolver relatos, consulte o painel antes de tentar novamente.
-
-Antes de aplicar migrações a um banco antigo, faça um backup e ensaie a atualização
-em uma cópia separada. As migrações `0002_mvp_facil` removem campos antigos e não
-podem ser desfeitas automaticamente. Elas mantêm os relatos abertos e apagam o
-texto dos resolvidos e os antigos registros de auditoria de chamados no Admin.
-Relatos cancelados, estados desconhecidos e descrições abertas acima de 250
-caracteres interrompem a conversão e precisam de revisão antes de continuar.
-
-Equipamentos antigos recebem um laboratório identificado como `LEGADO-REVISAR`.
-Revise esses cadastros após a migração. Uma data de conclusão preenchida pela
-conversão pode vir da última atualização antiga; ela não comprova a data do reparo.
-
-O teste `chamados.test_migracoes` cria e remove seu próprio banco temporário,
-além do banco de testes normal do Django. Ele também exige permissão para criar
-bancos e nunca deve usar uma conta de produção.
-
-## Verificação da entrega atual
-
-Em 26/10/2026, os 51 testes de `equipamentos`, `chamados` e `config` passaram
-em uma instância PostgreSQL isolada, com Python 3.14.6 e Django 6.1.1.
-Foram verificados envio, permissões, etiquetas, resolução parcial, concorrência,
-rollback, descarte do texto, contagem, migração antiga e páginas de erro.
-
-Ainda faltam as verificações manuais para considerar o MVP fácil entregue:
-
-- Imprimir e escanear as duas etiquetas em um celular, conferindo equipamento e laboratório.
-- Enviar um relato pelo celular e percorrer o atendimento até a contagem final.
-- Repetir o fluxo por teclado e sem JavaScript, nos navegadores previstos.
-- Conferir o fluxo público nas larguras de 360 a 1920 pixels e as telas técnicas em desktop.
-- Medir as metas de tempo de resposta e de uso com participantes, conforme o plano.
-
-Aplicação Django para registrar e acompanhar problemas em equipamentos de laboratórios universitários por QR Code.
-
-## Instalação para desenvolvimento
-
-Pré-requisitos: Python **3.14.6 ou superior**, acesso à internet para baixar as
-dependências e PostgreSQL para executar a aplicação. No Linux, instale
-também o pacote de suporte a `venv` da sua distribuição, caso necessário.
-
-Abra um terminal na pasta do projeto e execute:
-
-```powershell
-# Windows
 py -3.14 instalar.py
 ```
 
+**Linux ou macOS:**
+
 ```bash
-# Linux ou macOS
 python3 instalar.py
 ```
 
-Se o comando `py` não estiver disponível no Windows, use `python instalar.py` com
-a versão exigida do Python no PATH.
+Se `py` não estiver disponível no Windows, use `python instalar.py` com a versão exigida do Python.
 
-O instalador cria `.venv`, instala as versões de `requirements.txt` usando `pip`,
-verifica as dependências e executa `manage.py check`. Também cria `.env` a partir
-de `.env.example`, gerando uma chave secreta aleatória para o ambiente local.
-Arquivos `.env` existentes são preservados, inclusive sua chave secreta.
-É possível executar o instalador novamente para instalar dependências atualizadas.
-Se uma etapa falhar, ele interrompe a execução e informa o erro.
+O instalador cria `.venv`, instala as dependências de `requirements.txt` e cria `.env` a partir de `.env.example`, com uma chave secreta aleatória. Um `.env` existente é preservado. É possível executar o instalador novamente para atualizar as dependências conforme o arquivo de versões.
 
-Não é necessário instalar ou usar `uv`, nem ativar o ambiente virtual para os
-comandos abaixo. `pyproject.toml` declara as dependências diretas e o requisito de
-Python; `requirements.txt` fixa as versões instaladas pela equipe. Ao atualizar
-dependências, mantenha esses arquivos coerentes.
+Não é necessário ativar o ambiente virtual ou instalar `uv` para seguir os comandos deste documento. O instalador não instala o PostgreSQL, não cria o banco e não aplica migrações. A verificação `manage.py check` também não confirma a conexão com o banco.
 
-## Configuração do ambiente
+## Configuração
 
-Edite `.env` com os valores do seu ambiente:
+Crie o banco e o usuário no PostgreSQL, com permissão para criar tabelas no banco escolhido. Depois, ajuste o `.env`:
 
-| Variável | Uso |
+| Variável | Configuração |
 | --- | --- |
-| `DJANGO_SECRET_KEY` | Chave local gerada pelo instalador. Se o `.env` já existia, preencha caso esteja vazia. |
-| `DJANGO_DEBUG` | `true` para desenvolvimento local. |
-| `DJANGO_ALLOWED_HOSTS` | Hosts permitidos separados por vírgula; o exemplo permite acesso local. |
-| `POSTGRES_DB` | Nome do banco, inicialmente `qreparo`. |
-| `POSTGRES_USER` | Usuário do PostgreSQL, inicialmente `qreparo`. |
-| `POSTGRES_PASSWORD` | Senha do usuário do banco. |
-| `POSTGRES_HOST` | Endereço do PostgreSQL, inicialmente `localhost`. |
-| `POSTGRES_PORT` | Porta do PostgreSQL, inicialmente `5432`. |
+| `DJANGO_SECRET_KEY` | Chave secreta gerada pelo instalador; preencha se o arquivo existente não tiver uma |
+| `DJANGO_DEBUG` | `true` para desenvolvimento local; `false` fora desse ambiente |
+| `DJANGO_ALLOWED_HOSTS` | Hosts permitidos, separados por vírgula, sem protocolo ou porta |
+| `POSTGRES_DB` | Nome do banco; padrão `qreparo` |
+| `POSTGRES_USER` | Usuário do banco; padrão `qreparo` |
+| `POSTGRES_PASSWORD` | Senha do usuário do banco |
+| `POSTGRES_HOST` | Endereço do PostgreSQL; padrão `localhost` |
+| `POSTGRES_PORT` | Porta do PostgreSQL; padrão `5432` |
+| `QREPARO_PUBLIC_URL` | Origem usada nas etiquetas, com protocolo e porta quando necessária, sem caminho; exemplo `http://127.0.0.1:8000` |
 
-Crie o usuário e o banco no PostgreSQL, dando ao usuário permissão para criar
-tabelas no banco escolhido. O instalador prepara o ambiente Python; a instalação
-do PostgreSQL, criação do banco e execução de migrações são etapas separadas.
-O comando `check` não confirma a conexão com o banco.
+O `.env` contém segredos e não deve ser incluído no Git. Ao trocar de computador, configure o ambiente local e execute o instalador novamente, sem copiar a `.venv` de outra máquina.
 
-O `.env` contém segredos e já está excluído do Git.
+## Primeira execução
 
-## Executar a aplicação
+Depois de configurar o banco e o `.env`, aplique as migrações, crie a primeira conta administrativa e inicie o servidor.
 
-Depois de configurar o PostgreSQL e o `.env`, execute no Windows:
+**Windows:**
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py migrate
@@ -151,7 +65,7 @@ Depois de configurar o PostgreSQL e o `.env`, execute no Windows:
 .\.venv\Scripts\python.exe manage.py runserver
 ```
 
-No Linux ou macOS:
+**Linux ou macOS:**
 
 ```bash
 ./.venv/bin/python manage.py migrate
@@ -159,20 +73,78 @@ No Linux ou macOS:
 ./.venv/bin/python manage.py runserver
 ```
 
-Crie o superusuário apenas no primeiro acesso ao seu banco. Com o servidor em
-execução, acesse [a administração local](http://127.0.0.1:8000/admin/).
+Crie o superusuário apenas no primeiro acesso ao banco. Nas próximas execuções, basta iniciar o servidor; aplique novas migrações quando houver atualizações do projeto.
 
+Acesse a [administração local](http://127.0.0.1:8000/admin/) para preparar os cadastros e as contas. O `runserver` é um servidor de desenvolvimento, não de produção.
 
-## Fluxo de instalação
-1. Instalar Python 3.14.6 ou superior e PostgreSQL no computador.
-2. Baixar o projeto e executar o instalador:
-   py -3.14 instalar.py
-   Ele cria .venv, instala as dependências com pip, cria .env com uma chave secreta e verifica a configuração do Django.
-3. Criar manualmente no PostgreSQL o usuário qreparo, com senha, e o banco qreparo, com as permissões necessárias.
-4. Editar .env, preenchendo POSTGRES_PASSWORD com essa senha. Se os nomes, endereço ou porta forem diferentes dos padrões, ajustar também.
-5. Criar as tabelas e a primeira conta administrativa:
-   .\.venv\Scripts\python.exe manage.py migrate
-   .\.venv\Scripts\python.exe manage.py createsuperuser
-6. Iniciar a aplicação:
-   .\.venv\Scripts\python.exe manage.py runserver
-   Acessar o painel administrativo.
+### Banco com dados antigos
+
+Antes de atualizar um banco existente, faça um backup e ensaie a migração em uma cópia separada. As migrações `0002_mvp_facil` removem campos antigos, apagam textos de relatos resolvidos e não podem ser desfeitas automaticamente.
+
+Relatos cancelados, estados desconhecidos ou descrições abertas acima de 250 caracteres interrompem a conversão e precisam de revisão. Depois da migração, revise os equipamentos associados ao laboratório `LEGADO-REVISAR`.
+
+## Cadastros e permissões
+
+No Admin, cadastre laboratórios, locais, equipamentos e problemas. A identificação de um equipamento pode ser um código interno, sem patrimônio institucional. Preencha sua descrição e localização.
+
+Cada local permanece no laboratório em que foi criado. Para transferir um equipamento, selecione outro local no cadastro. Equipamentos com histórico devem ser desativados, em vez de excluídos.
+
+Crie as contas internas pelo Admin e atribua as permissões diretamente ou por grupo:
+
+| Acesso | Permissões necessárias |
+| --- | --- |
+| Consultar relatos e contagem | `chamados.view_chamado` |
+| Resolver relatos | `chamados.view_chamado` e `chamados.change_chamado` |
+| Gerar etiquetas | `equipamentos.view_equipamento` |
+| Usar o Admin | Conta ativa com `is_staff` e permissões dos cadastros correspondentes |
+
+Ter acesso ao Admin não concede automaticamente acesso aos relatos.
+
+Para preparar dois equipamentos e uma lista de problemas de demonstração, execute:
+
+```powershell
+.\.venv\Scripts\python.exe manage.py seed_qreparo
+```
+
+No Linux ou macOS, use `./.venv/bin/python manage.py seed_qreparo`. O comando pode ser repetido e não cria contas, senhas ou relatos.
+
+## Uso da aplicação
+
+1. Abra o equipamento no Admin e use **Ver etiqueta** para imprimir seu QR Code.
+2. Escaneie a etiqueta e confira o equipamento e o laboratório.
+3. Selecione um problema e envie o relato. A descrição aceita até 250 caracteres e é obrigatória apenas para **Outro problema**. Não inclua dados pessoais.
+4. Entre na [área técnica local](http://127.0.0.1:8000/entrar/), abra o equipamento e selecione os relatos solucionados.
+5. Confira a seleção e confirme a resolução. A descrição será apagada, sem possibilidade de reabertura nesta versão.
+6. Consulte a contagem técnica, que permanece disponível após o descarte do texto.
+
+Se algum relato selecionado já tiver sido resolvido, nenhum item daquele lote será alterado e será necessária uma nova conferência. Se ocorrer uma falha sem confirmação do resultado, consulte o painel antes de repetir a operação.
+
+Equipamentos desativados não recebem novos relatos, mas continuam no painel enquanto tiverem relatos abertos. O aluno recebe apenas uma confirmação de envio, sem acompanhamento público.
+
+### Acesso pelo celular
+
+O endereço em `QREPARO_PUBLIC_URL` precisa ser acessível pelo celular. `localhost` e `127.0.0.1` apontam para o próprio aparelho, não para o computador que executa a aplicação.
+
+Para um teste na rede local, configure essa variável com o endereço do computador, inclua o host em `DJANGO_ALLOWED_HOSTS` e inicie o servidor com `runserver 0.0.0.0:8000`. O celular precisa alcançar esse endereço e a porta deve estar permitida na rede. Use HTTPS ao disponibilizar a aplicação em rede fora desse teste local.
+
+## Testes
+
+Use uma conta PostgreSQL de desenvolvimento com permissão para criar bancos. O Django cria um banco de testes separado; o teste de migração legada cria e remove outro banco temporário. Não execute os testes com credenciais de produção.
+
+**Windows:**
+
+```powershell
+.\.venv\Scripts\python.exe manage.py test equipamentos chamados config
+.\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+```
+
+**Linux ou macOS:**
+
+```bash
+./.venv/bin/python manage.py test equipamentos chamados config
+./.venv/bin/python manage.py makemigrations --check --dry-run
+```
+
+## Documentação
+
+Consulte a [documentação do projeto](instrucoes/README.md) e a [ordem de desenvolvimento](instrucoes/ORDEM_DE_DESENVOLVIMENTO.md) para conhecer o escopo e a sequência de entregas.

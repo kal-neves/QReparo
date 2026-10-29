@@ -20,8 +20,6 @@
           {% include "ui/button.html" with label="Sair" icon="logout" variant="outline-primary" type="submit" %}
         </form>
       {% endif %}
-    {% elif not hide_technical_access %}
-      <a class="qr-public-access" href="{% url 'paginas:entrada' %}">Área técnica</a>
     {% endif %}
   </div>
 </header>

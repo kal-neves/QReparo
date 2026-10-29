@@ -4,7 +4,7 @@ Aplicação Django com PostgreSQL para registrar problemas em equipamentos de la
 
 O aluno envia um relato sem criar conta. O técnico consulta os relatos por equipamento, confere quais foram solucionados e confirma a resolução. Ao resolver, o sistema apaga a descrição e preserva os dados técnicos necessários para a contagem.
 
-Esta versão implementa o MVP fácil. A validação manual da entrega ainda está pendente.
+Esta versão implementa o MVP.
 
 ## Requisitos
 

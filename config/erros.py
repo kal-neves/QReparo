@@ -8,8 +8,8 @@ from django.views.decorators.cache import never_cache
 def pagina_erro(request, *, status, titulo, texto, detalhe='', retorno=None):
     usuario = None if status == 500 else getattr(request, 'user', None)
     tecnico = bool(usuario and usuario.has_perm('chamados.view_chamado'))
-    action_url = reverse('paginas:painel' if tecnico else 'paginas:entrada')
-    action_label = 'Voltar ao painel' if tecnico else 'Área técnica'
+    action_url = reverse('paginas:painel') if tecnico else None
+    action_label = 'Voltar ao painel' if tecnico else None
     if retorno:
         action_url = retorno
         action_label = 'Abrir formulário novamente'

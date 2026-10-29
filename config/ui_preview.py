@@ -90,7 +90,7 @@ def remaining_preview(request, screen):
         'pagina': {'state_title': 'Página não encontrada',
                    'state_text': 'Não encontramos a página que você tentou acessar.',
                    'state_icon': 'file-question',
-                   'action_label': 'Voltar aos equipamentos' if technical else 'Ir para a área técnica'},
+                   'action_label': 'Voltar aos equipamentos' if technical else None},
         'formulario': {'state_title': 'Não foi possível enviar',
                        'state_text': 'Abra o formulário novamente e tente de novo.',
                        'state_icon': 'clock', 'action_label': 'Abrir formulário novamente', 'technical': False},

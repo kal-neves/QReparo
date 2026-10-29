@@ -23,7 +23,7 @@ class InterfaceTests(SimpleTestCase):
 
     def test_public_header_stays_public_for_technician(self):
         html = self.render_header(user_with('chamados.view_chamado', staff=True), internal=False)
-        self.assertIn('Área técnica', html)
+        self.assertNotIn('Área técnica', html)
         self.assertNotIn('Contagem técnica', html)
         self.assertNotIn('Cadastros', html)
         self.assertNotIn('class="qr-brand" href=', html)

@@ -7,7 +7,7 @@
 {% block main_class %}qr-width-work qr-review{% endblock %}
 {% block heading %}
   {% if backend_connected %}
-    <a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Voltar aos relatos</a>
+    <a class="btn btn-link qr-work-back" href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">{% include 'ui/icon.html' with name='arrow-left' only %}Voltar aos relatos</a>
   {% else %}
     {% include 'ui/inert_link.html' with label='Voltar aos relatos' icon='arrow-left' extra_class='qr-work-back' only %}
   {% endif %}

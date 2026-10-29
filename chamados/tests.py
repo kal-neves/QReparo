@@ -90,7 +90,7 @@ class AdaptacaoTests(TestCase):
             resposta = self.client.get(url)
             self.assertEqual(resposta.status_code, 200)
             self.assertIn('no-store', resposta['Cache-Control'])
-            self.assertEqual(resposta['Referrer-Policy'], 'no-referrer')
+            self.assertEqual(resposta['Referrer-Policy'], 'same-origin')
 
     def test_endpoint_antigo_nao_contorna_conferencia(self):
         relato = self.relato()

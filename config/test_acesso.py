@@ -57,3 +57,20 @@ class AcessoTests(TestCase):
         self.assertEqual(cliente.post(self.entrada, {'username': 'tecnico', 'password': 'senha-de-teste'}).status_code, 403)
         cliente.force_login(self.usuario)
         self.assertEqual(cliente.post(reverse('paginas:saida')).status_code, 403)
+
+    def test_login_preserva_origem_e_recusa_origens_invalidas(self):
+        cliente = Client(enforce_csrf_checks=True)
+        resposta = cliente.get(self.entrada)
+        self.assertEqual(resposta['Referrer-Policy'], 'same-origin')
+        dados = {
+            'username': 'tecnico', 'password': 'senha-de-teste',
+            'csrfmiddlewaretoken': cliente.cookies['csrftoken'].value,
+        }
+        for origem in ('null', 'http://outro.example'):
+            with self.subTest(origem=origem):
+                resposta = cliente.post(self.entrada, dados, HTTP_ORIGIN=origem)
+                self.assertEqual(resposta.status_code, 403)
+                self.assertNotIn('_auth_user_id', cliente.session)
+        resposta = cliente.post(self.entrada, dados, HTTP_ORIGIN='http://testserver')
+        self.assertRedirects(resposta, reverse('paginas:painel'))
+        self.assertEqual(cliente.session['_auth_user_id'], str(self.usuario.pk))

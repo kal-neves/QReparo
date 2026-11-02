@@ -15,6 +15,7 @@ class EquipamentoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['descricao'].required = True
+        self.fields['categoria'].required = True
 
 
 @admin.register(Laboratorio)
@@ -35,9 +36,9 @@ class LocalAdmin(admin.ModelAdmin):
 @admin.register(Equipamento)
 class EquipamentoAdmin(admin.ModelAdmin):
     form = EquipamentoForm
-    list_display = ('codigo_patrimonio', 'nome', 'local', 'ativo')
-    list_filter = ('ativo', 'local__laboratorio')
-    search_fields = ('codigo_patrimonio', 'nome')
+    list_display = ('codigo_patrimonio', 'nome', 'categoria', 'local', 'ativo')
+    list_filter = ('ativo', 'categoria', 'local__laboratorio')
+    search_fields = ('codigo_patrimonio', 'nome', 'categoria')
     readonly_fields = ('qr_token', 'etiqueta')
     list_select_related = ('local__laboratorio',)
 

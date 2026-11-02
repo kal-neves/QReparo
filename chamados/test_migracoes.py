@@ -17,7 +17,7 @@ class MigracaoLegadoTests(TransactionTestCase):
         connections[alias] = banco
         try:
             antigos = [('equipamentos', '0001_initial'), ('chamados', '0001_initial'), ('admin', '0003_logentry_add_action_flag_choices')]
-            novos = [('equipamentos', '0002_mvp_facil'), ('chamados', '0002_mvp_facil')]
+            novos = [('equipamentos', '0003_equipamento_categoria'), ('chamados', '0002_mvp_facil')]
             executor = MigrationExecutor(banco)
             executor.migrate(antigos)
             apps = executor.loader.project_state(antigos).apps
@@ -62,6 +62,7 @@ class MigracaoLegadoTests(TransactionTestCase):
             self.assertFalse(LogEntry.objects.using(alias).exists())
             EquipamentoAtual = apps.get_model('equipamentos', 'Equipamento')
             self.assertEqual(EquipamentoAtual.objects.using(alias).values('qr_token').distinct().count(), 2)
+            self.assertEqual(EquipamentoAtual.objects.using(alias).filter(categoria='').count(), 2)
             self.assertNotIn('solicitante', [campo.name for campo in Atual._meta.fields])
         finally:
             banco.close()

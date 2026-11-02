@@ -25,6 +25,7 @@ class Equipamento(models.Model):
     nome = models.CharField(max_length=150)
     codigo_patrimonio = models.CharField(max_length=50, unique=True)
     descricao = models.TextField(blank=True)
+    categoria = models.CharField(max_length=100, blank=True)
     local = models.ForeignKey(Local, on_delete=models.PROTECT)
     ativo = models.BooleanField(default=True)
     qr_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

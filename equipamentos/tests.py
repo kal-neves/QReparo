@@ -26,7 +26,9 @@ class CadastroTests(TestCase):
         form = EquipamentoForm(data=dados)
         self.assertFalse(form.is_valid())
         self.assertIn('descricao', form.errors)
+        self.assertIn('categoria', form.errors)
         dados['descricao'] = 'Computador de apoio'
+        dados['categoria'] = 'Computador'
         form = EquipamentoForm(data=dados)
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.fields['codigo_patrimonio'].label, 'Identificação')
@@ -67,6 +69,7 @@ class CadastroTests(TestCase):
         call_command('seed_qreparo', stdout=StringIO())
         primeiro = Equipamento.objects.get(codigo_patrimonio='DEMO-001')
         primeiro.nome = 'Nome escolhido pela equipe'
+        primeiro.categoria = 'Estação de trabalho'
         primeiro.save()
         call_command('seed_qreparo', stdout=StringIO())
         primeiro.refresh_from_db()
@@ -75,6 +78,8 @@ class CadastroTests(TestCase):
         self.assertEqual(exemplos.values('local').distinct().count(), 2)
         self.assertFalse(exemplos.filter(descricao='').exists())
         self.assertEqual(primeiro.nome, 'Nome escolhido pela equipe')
+        self.assertEqual(primeiro.categoria, 'Estação de trabalho')
+        self.assertEqual(exemplos.get(codigo_patrimonio='DEMO-002').categoria, 'Computador')
         self.assertFalse(Chamado.objects.exists())
         self.assertEqual(get_user_model().objects.count(), 1)
 
@@ -103,3 +108,23 @@ class CadastroTests(TestCase):
         self.assertEqual(outro.nome, 'Outro problema revisado')
         self.assertEqual(Tag.objects.filter(outro=True).count(), 1)
         self.assertEqual(Tag.objects.count(), 11)
+
+    def test_admin_salva_categoria_e_filtra_equipamentos(self):
+        url = reverse('admin:equipamentos_equipamento_change', args=[self.equipamento.pk])
+        resposta = self.client.post(url, {
+            'nome': self.equipamento.nome, 'codigo_patrimonio': self.equipamento.codigo_patrimonio,
+            'descricao': self.equipamento.descricao, 'categoria': 'Computador',
+            'local': self.local.pk, 'ativo': True,
+        })
+        self.assertEqual(resposta.status_code, 302)
+        self.equipamento.refresh_from_db()
+        self.assertEqual(self.equipamento.categoria, 'Computador')
+        Equipamento.objects.create(
+            nome='Impressora', codigo_patrimonio='IMP-01', categoria='Impressora', local=self.local,
+        )
+        url = reverse('admin:equipamentos_equipamento_changelist')
+        for filtro in ({'categoria': 'Computador'}, {'q': 'Computador'}):
+            with self.subTest(filtro=filtro):
+                resposta = self.client.get(url, filtro)
+                self.assertEqual(resposta.status_code, 200)
+                self.assertEqual(list(resposta.context['cl'].queryset), [self.equipamento])

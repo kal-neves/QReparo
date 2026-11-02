@@ -85,7 +85,9 @@ Relatos cancelados, estados desconhecidos ou descrições abertas acima de 250 c
 
 ## Cadastros e permissões
 
-No Admin, cadastre laboratórios, locais, equipamentos e problemas. A identificação de um equipamento pode ser um código interno, sem patrimônio institucional. Preencha sua descrição e localização.
+No Admin, cadastre laboratórios, locais, equipamentos e problemas. A identificação de um equipamento pode ser um código interno, sem patrimônio institucional. Preencha sua categoria (por exemplo, Computador ou Impressora), descrição e localização. A categoria identifica o tipo de equipamento, não o problema relatado.
+
+A migração `equipamentos.0003_equipamento_categoria` acrescenta o campo sem inferir categorias para equipamentos existentes. Revise esses cadastros pelo Admin; o formulário exige categoria ao salvar. O comando de demonstração define a categoria somente para equipamentos novos e preserva os já cadastrados.
 
 Cada local permanece no laboratório em que foi criado. Para transferir um equipamento, selecione outro local no cadastro. Equipamentos com histórico devem ser desativados, em vez de excluídos.
 

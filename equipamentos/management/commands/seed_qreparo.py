@@ -17,6 +17,7 @@ class Command(BaseCommand):
                 defaults={
                     'nome': f'Computador de demonstração {numero}',
                     'descricao': f'Computador para demonstração na bancada {numero:02d}',
+                    'categoria': 'Computador',
                     'local': local,
                 },
             )

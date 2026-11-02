@@ -20,7 +20,10 @@ class Command(BaseCommand):
                     'local': local,
                 },
             )
-        for nome in ['Não liga', 'Sem imagem', 'Sem conexão de rede']:
+        for nome in [
+            'Não liga', 'Sem internet', 'Lentidão', 'Periférico', 'Software',
+            'Monitor', 'Teclado/mouse', 'Áudio', 'Impressora',
+        ]:
             Tag.objects.get_or_create(nome=nome)
         Tag.objects.get_or_create(outro=True, defaults={'nome': 'Outro problema'})
         self.stdout.write(self.style.SUCCESS('Cadastros preparados. Crie contas e atribua permissões pelo Admin.'))

@@ -77,3 +77,29 @@ class CadastroTests(TestCase):
         self.assertEqual(primeiro.nome, 'Nome escolhido pela equipe')
         self.assertFalse(Chamado.objects.exists())
         self.assertEqual(get_user_model().objects.count(), 1)
+
+    def test_seed_prepara_catalogo_completo_sem_duplicar(self):
+        for _ in range(2):
+            call_command('seed_qreparo', stdout=StringIO())
+        self.assertSetEqual(set(Tag.objects.values_list('nome', flat=True)), {
+            'Não liga', 'Sem internet', 'Lentidão', 'Periférico', 'Software',
+            'Monitor', 'Teclado/mouse', 'Áudio', 'Impressora', 'Outro problema',
+        })
+        self.assertEqual(Tag.objects.filter(outro=True).count(), 1)
+        self.assertTrue(Tag.objects.get(nome='Outro problema').outro)
+
+    def test_seed_preserva_classificacoes_existentes_e_relato(self):
+        problema = Tag.objects.create(nome='Sem imagem')
+        relato = Chamado.objects.create(equipamento=self.equipamento, problema=problema)
+        outro = Tag.objects.get(outro=True)
+        outro.nome = 'Outro problema revisado'
+        outro.save()
+        for _ in range(2):
+            call_command('seed_qreparo', stdout=StringIO())
+        relato.refresh_from_db()
+        outro.refresh_from_db()
+        self.assertEqual(relato.problema_id, problema.pk)
+        self.assertEqual(relato.problema.nome, 'Sem imagem')
+        self.assertEqual(outro.nome, 'Outro problema revisado')
+        self.assertEqual(Tag.objects.filter(outro=True).count(), 1)
+        self.assertEqual(Tag.objects.count(), 11)

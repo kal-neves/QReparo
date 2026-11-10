@@ -35,6 +35,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'chamados.middleware.LimiteEnvioMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -109,3 +110,7 @@ QREPARO_PUBLIC_URL = os.environ.get('QREPARO_PUBLIC_URL', '')
 LOGIN_URL = 'paginas:entrada'
 LOGOUT_REDIRECT_URL = 'paginas:entrada'
 CSRF_FAILURE_VIEW = 'config.erros.csrf_rejeitado'
+
+QREPARO_FOTOS_ROOT = Path(os.environ.get('QREPARO_FOTOS_ROOT', BASE_DIR / 'midia_privada'))
+DATA_UPLOAD_MAX_MEMORY_SIZE = 25_000_000
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1_000_000

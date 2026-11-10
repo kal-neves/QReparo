@@ -3,18 +3,38 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 
-from .models import Chamado
+from .models import Chamado, Foto
+from .fotos import apagar_arquivo, preparar_fotos
 
 
 class ConflitoSelecao(ValidationError):
     pass
 
 
-def criar_relato(*, token, problema, descricao):
-    equipamento = Equipamento.objects.get(qr_token=token)
-    return Chamado.objects.create(
-        equipamento=equipamento, problema=problema, descricao=descricao.strip(),
-    )
+def criar_relato(*, token, problema, descricao, fotos=()):
+    preparadas = preparar_fotos(fotos)
+    salvos = []
+    try:
+        with transaction.atomic(durable=True):
+            equipamento = Equipamento.objects.get(qr_token=token)
+            chamado = Chamado.objects.create(
+                equipamento=equipamento, problema=problema, descricao=descricao.strip(),
+            )
+            for posicao, (conteudo, largura, altura) in enumerate(preparadas, start=1):
+                foto = Foto(chamado=chamado, posicao=posicao, largura=largura,
+                            altura=altura, tamanho=conteudo.size)
+                nome = foto.arquivo.field.generate_filename(foto, 'foto.webp')
+                salvos.append((foto.arquivo.storage, nome))
+                foto.arquivo.name = foto.arquivo.storage.save(nome, conteudo)
+                salvos[-1] = (foto.arquivo.storage, foto.arquivo.name)
+                foto.save()
+            return chamado
+    except Exception as erro:
+        for storage, nome in salvos:
+            apagar_arquivo(storage, nome)
+        if isinstance(erro, OSError):
+            raise ValidationError('Não foi possível salvar as fotos. Tente novamente.') from erro
+        raise
 
 
 def conferir_selecionados(*, equipamento_id, ids, bloquear=False):

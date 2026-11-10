@@ -2,6 +2,10 @@ from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.urls import reverse
+from uuid import uuid4
+
+from .fotos import armazenamento_fotos, caminho_foto
 
 
 class ConflitoEstado(ValidationError):
@@ -72,7 +76,29 @@ class Chamado(models.Model):
                     }
             self.full_clean()
             super().save(*args, **kwargs)
+            if self.status == self.RESOLVIDO:
+                self.fotos.all().delete()
 
     def __str__(self):
         # Não incluir texto livre em representações usadas por logs/Admin.
         return f'Relato #{self.pk} — {self.status}'
+
+
+class Foto(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    chamado = models.ForeignKey(Chamado, on_delete=models.CASCADE, related_name='fotos')
+    arquivo = models.FileField(storage=armazenamento_fotos, upload_to=caminho_foto)
+    posicao = models.PositiveSmallIntegerField()
+    largura = models.PositiveIntegerField()
+    altura = models.PositiveIntegerField()
+    tamanho = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['posicao']
+        constraints = [
+            models.UniqueConstraint(fields=['chamado', 'posicao'], name='foto_posicao_unica'),
+            models.CheckConstraint(condition=Q(posicao__in=[1, 2]), name='foto_posicao_valida'),
+        ]
+
+    def get_absolute_url(self):
+        return reverse('chamados:foto', args=[self.chamado_id, self.pk])

@@ -3,14 +3,15 @@ from uuid import UUID
 
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
 from equipamentos.models import Equipamento
-from .models import Chamado, Tag
+from .models import Chamado, Foto, Tag
+from .fotos import arquivos_do_envio
 from .forms import RelatoForm
 from .servicos import criar_relato
 
@@ -31,11 +32,12 @@ def novo_relato(request, token):
         return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'sem-opcoes'}, status=503)
     if request.method == 'POST' and form.is_valid():
         try:
-            criar_relato(token=token, **form.cleaned_data)
+            criar_relato(token=token, fotos=arquivos_do_envio(request), **form.cleaned_data)
         except Equipamento.DoesNotExist:
             return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'invalido'}, status=404)
-        except ValidationError:
+        except ValidationError as erro:
             form.add_error(None, 'Não foi possível enviar o relato Confira o equipamento e tente novamente')
+            form.add_error(None, erro)
         else:
             return redirect('paginas:confirmacao')
     return render(request, 'chamados/novo.html', contexto)
@@ -69,6 +71,11 @@ def _serializar(chamado):
         'descricao': chamado.descricao,
         'status': chamado.status,
         'data_abertura': chamado.data_abertura,
+        'fotos': [
+            {'id': foto.pk, 'url': foto.get_absolute_url(), 'posicao': foto.posicao,
+             'largura': foto.largura, 'altura': foto.altura, 'tamanho': foto.tamanho}
+            for foto in chamado.fotos.all()
+        ],
     }
 
 
@@ -77,7 +84,7 @@ def _serializar(chamado):
 @require_http_methods(['GET'])
 def chamado_list_view(request):
     """Adapta a consulta existente: apenas relatos ativos, acesso técnico."""
-    chamados = Chamado.objects.filter(status=Chamado.ABERTO).select_related('problema', 'equipamento')
+    chamados = Chamado.objects.filter(status=Chamado.ABERTO).select_related('problema', 'equipamento').prefetch_related('fotos')
     equipamento = request.GET.get('equipamento')
     if equipamento:
         if not equipamento.isdecimal() or len(equipamento) > 18:
@@ -108,6 +115,8 @@ def api_chamados(request):
         return chamado_list_view(request)
     try:
         dados = _dados(request)
+        if request.content_type == 'application/json' and 'fotos' in dados:
+            raise ValidationError('Para enviar fotos, use multipart/form-data com o campo fotos.')
         token = UUID(str(dados.get('qr_token', '')))
         problema_id = dados.get('problema')
         if isinstance(problema_id, bool) or not str(problema_id).isdecimal() or len(str(problema_id)) > 18:
@@ -116,7 +125,7 @@ def api_chamados(request):
         if not isinstance(descricao, str):
             raise ValidationError('Descrição inválida.')
         problema = get_object_or_404(Tag, pk=int(problema_id))
-        criar_relato(token=token, problema=problema, descricao=descricao)
+        criar_relato(token=token, problema=problema, descricao=descricao, fotos=arquivos_do_envio(request))
     except (ValueError, TypeError):
         return JsonResponse({'erro': 'Identificador de QR inválido.'}, status=400)
     except ValidationError as erro:
@@ -125,6 +134,22 @@ def api_chamados(request):
         return JsonResponse({'erro': 'Equipamento não encontrado.'}, status=404)
     # Nenhum ID consultável, autoria ou texto livre retorna ao aluno.
     return JsonResponse({'mensagem': 'Relato recebido.'}, status=201)
+
+
+@never_cache
+@permission_required('chamados.view_chamado', raise_exception=True)
+@require_http_methods(['GET'])
+def foto_relato(request, pk, foto_id):
+    foto = get_object_or_404(Foto, pk=foto_id, chamado_id=pk,
+                             chamado__status=Chamado.ABERTO, chamado__conteudo_removido=False)
+    try:
+        arquivo = foto.arquivo.open('rb')
+    except FileNotFoundError as erro:
+        raise Http404('Foto indisponível.') from erro
+    resposta = FileResponse(arquivo, content_type='image/webp', filename='foto.webp')
+    resposta['X-Content-Type-Options'] = 'nosniff'
+    resposta['Content-Security-Policy'] = "default-src 'none'; sandbox"
+    return resposta
 
 
 @never_cache

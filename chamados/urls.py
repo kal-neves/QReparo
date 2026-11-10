@@ -7,6 +7,7 @@ urlpatterns = [
     # Visualizações HTML
     path('', views.chamado_list_view, name='lista'),
     path('<int:pk>/', views.chamado_detail_view, name='detalhes'),
+    path('<int:pk>/fotos/<uuid:foto_id>/', views.foto_relato, name='foto'),
 
     # Endpoints de API REST
     path('api/', views.api_chamados, name='api_lista_ou_criar'),

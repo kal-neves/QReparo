@@ -124,3 +124,61 @@ class RemainingPreviewTests(SimpleTestCase):
             self.assertContains(self.render_preview('erro', state), 'class="qr-public"')
             self.assertContains(self.render_preview('erro', state, perfil='tecnico'), 'class="qr-desktop"')
         self.assertContains(self.render_preview('erro', 'desconhecido'), 'Página não encontrada')
+
+
+class FullComponentsTests(SimpleTestCase):
+    def catalog(self, params=None):
+        from .ui_preview import preview
+        return preview(RequestFactory().get('/_ui/', params or {}))
+
+    def test_catalog_filters_paginate_fixtures_without_database(self):
+        self.assertContains(self.catalog(), 'Página 1 de 3')
+        self.assertContains(self.catalog({'estado': 'Resolvido'}), '4 resultados')
+        self.assertContains(self.catalog({'busca': 'PC-08'}), '1 resultados')
+        self.assertContains(self.catalog({'busca': 'ausente'}), 'Nenhum exemplo corresponde')
+        self.assertContains(self.catalog({'inicio': 'invalida'}), 'invalid-feedback')
+        self.assertContains(self.catalog({'page': '999'}), 'Página 3 de 3')
+
+    def test_pagination_preserves_multivalued_filters_without_mutating_query(self):
+        from django.core.paginator import Paginator
+        from django.http import QueryDict
+        from chamados.templatetags.ui import ui_pagination
+        query = QueryDict('tag=1&tag=2&busca=a%26b&page=1')
+        original = query.urlencode()
+        context = ui_pagination(Paginator(range(6), 2).page(1), query)
+        self.assertEqual(context['previous_url'], '')
+        self.assertIn('tag=1&tag=2', context['next_url'])
+        self.assertIn('page=2', context['next_url'])
+        self.assertEqual(query.urlencode(), original)
+
+    def test_metric_distinguishes_zero_from_unavailable(self):
+        zero = render_to_string('ui/metric_card.html', {'label': 'Total', 'value': 0})
+        unavailable = render_to_string('ui/metric_card.html', {'label': 'Tempo', 'value': None, 'unit': 'h'})
+        self.assertIn('<dd>0</dd>', zero)
+        self.assertIn('Indisponível', unavailable)
+        self.assertNotIn('<span>h</span>', unavailable)
+
+    def test_tag_selector_retains_bound_choices_errors_and_unique_ids(self):
+        from .ui_components import ComponentsForm
+        form = ComponentsForm({'a-tags': ['0', 'unknown']}, prefix='a')
+        html = render_to_string('ui/tag_selector.html', {'field': form['tags']})
+        self.assertRegex(html, r'value="0"[^>]* checked')
+        self.assertIn('aria-invalid="true"', html)
+        self.assertIn('id_a-tags_errors', html)
+        self.assertIn('for="id_a-tags_0"', html)
+
+    def test_public_header_ignores_custom_internal_navigation(self):
+        html = render_to_string('ui/header.html', {'internal': False,
+            'navigation_items': [{'key': 'private', 'label': 'Segredo', 'url': '/privado/'}]})
+        self.assertNotIn('Segredo', html)
+
+    def test_new_components_escape_untrusted_text(self):
+        payload = '<script>alert(1)</script>'
+        for template, context in [
+            ('metadata', {'items': [{'label': 'Nota', 'value': payload}]}),
+            ('photo_list', {'photos': [{'label': payload}]}),
+            ('metric_card', {'label': payload, 'value': 0}),
+        ]:
+            html = render_to_string(f'ui/{template}.html', context)
+            self.assertNotIn('<script>', html)
+            self.assertIn('&lt;script&gt;', html)

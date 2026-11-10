@@ -4,6 +4,7 @@ from django.forms.utils import ErrorDict, ErrorList
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.decorators.http import require_safe
+from .ui_components import components_context
 
 
 class ExampleForm(forms.Form):
@@ -172,6 +173,7 @@ def preview(request):
     invalid.is_valid()
     return render(request, 'ui/catalogo.html', {
         'titulo': 'Componentes de interface',
+        **components_context(request),
         'example_form': ExampleForm(prefix='example'),
         'invalid_form': invalid,
         'columns': ['Equipamento', 'Laboratório', 'Localização', 'Relatos abertos'],

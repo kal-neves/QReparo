@@ -1,5 +1,5 @@
 {% if rows %}
-<div class="qr-table-wrap">
+<div class="qr-table-wrap" role="region" aria-label="{{ caption }}" tabindex="0">
   <table class="table qr-table">
     <caption class="visually-hidden">{{ caption }}</caption>
     <thead><tr>{% for column in columns %}<th scope="col">{{ column }}</th>{% endfor %}{% if actions %}<th scope="col">Ação</th>{% endif %}</tr></thead>

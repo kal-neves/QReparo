@@ -6,6 +6,9 @@
       <img src="{% static 'brand/QReparo_logo_noSign_horizontal.svg' %}" alt="QReparo" width="204" height="48">
     {% if internal and perms.chamados.view_chamado %}</a>{% else %}</span>{% endif %}
     {% if internal %}
+      {% if navigation_items %}
+        {% include 'ui/navigation.html' with items=navigation_items active=active_nav only %}
+      {% else %}
       <nav class="qr-nav" aria-label="Principal">
         {% if perms.chamados.view_chamado %}
           <a {% if navigation_static %}role="link" aria-disabled="true" tabindex="0"{% else %}href="{% url 'paginas:painel' %}"{% endif %} {% if active_nav == 'painel' %}aria-current="page"{% endif %}>Equipamentos com chamados</a>
@@ -13,6 +16,7 @@
         {% endif %}
         {% if user.is_staff %}<a {% if navigation_static %}role="link" aria-disabled="true" tabindex="0"{% else %}href="{% url 'admin:index' %}"{% endif %} {% if active_nav == 'cadastros' %}aria-current="page"{% endif %}>Cadastros</a>{% endif %}
       </nav>
+      {% endif %}
       {% if navigation_static %}
         <div class="qr-session">{% include 'ui/button.html' with label='Sair' icon='logout' variant='outline-primary' only %}</div>
       {% elif user.is_authenticated %}

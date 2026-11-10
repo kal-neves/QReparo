@@ -67,5 +67,72 @@
     refresh();
   });
   refresh();
+  document.querySelectorAll('[data-tag-selector]').forEach((group) => {
+    const inputs = [...group.querySelectorAll('input[type="checkbox"]')];
+    const status = group.querySelector('[data-tag-status]');
+    const min = Number(group.dataset.min), max = Number(group.dataset.max);
+    const update = (event) => {
+      let count = inputs.filter(input => input.checked).length;
+      const exceeded = count > max;
+      if (exceeded && event?.target.checked) { event.target.checked = false; count--; }
+      status.textContent = `${count} de ${max} selecionados.${exceeded ? ` Selecione no máximo ${max} opções.` : ''}`;
+      const anchor = inputs.find(input => !input.disabled);
+      anchor?.setCustomValidity(count < min ? `Selecione pelo menos ${min} opção.` : count > max ? `Selecione no máximo ${max} opções.` : '');
+    };
+    group.addEventListener('change', update);
+    group.closest('form')?.addEventListener('reset', () => setTimeout(update, 0));
+    window.addEventListener('pageshow', () => update());
+    update();
+  });
+  document.querySelectorAll('[data-photo-input]').forEach((group) => {
+    const input = group.querySelector('input[type="file"]');
+    const preview = group.querySelector('[data-photo-preview]');
+    const status = group.querySelector('[data-photo-status]');
+    const remove = group.querySelector('[data-photo-remove]');
+    if (!input) return;
+    let objectUrl;
+    const release = () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = null;
+      preview.hidden = true;
+      preview.removeAttribute('src');
+    };
+    const update = () => {
+      release();
+      input.setCustomValidity('');
+      const file = input.files[0];
+      remove.hidden = !file;
+      status.textContent = '';
+      if (!file) return;
+      if (file.size > Number(group.dataset.maxBytes)) {
+        status.textContent = 'O arquivo excede o tamanho permitido.';
+        input.setCustomValidity(status.textContent);
+        return;
+      }
+      if (!/\.(png|jpe?g|heic)$/i.test(file.name)) {
+        status.textContent = 'Selecione uma foto PNG, JPEG ou HEIC.';
+        input.setCustomValidity(status.textContent);
+        return;
+      }
+      status.textContent = `${file.name} — ${(file.size / 1048576).toFixed(1)} MB. Selecionada apenas neste navegador.`;
+      if (/\.heic$/i.test(file.name)) {
+        status.textContent += ' Prévia HEIC indisponível; o servidor validará a imagem no envio.';
+        return;
+      }
+      objectUrl = URL.createObjectURL(file);
+      preview.src = objectUrl;
+      preview.hidden = false;
+    };
+    preview.addEventListener('error', () => {
+      release();
+      status.textContent = 'Não foi possível exibir a prévia. O servidor deve validar o arquivo no envio.';
+    });
+    input.addEventListener('change', update);
+    remove.addEventListener('click', () => { input.value = ''; update(); input.focus(); });
+    input.form?.addEventListener('reset', () => setTimeout(update, 0));
+    window.addEventListener('pagehide', release);
+    window.addEventListener('pageshow', update);
+    update();
+  });
   document.querySelector("[data-error-summary]")?.focus();
 })();

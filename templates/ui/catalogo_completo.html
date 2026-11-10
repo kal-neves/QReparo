@@ -1,0 +1,64 @@
+{% load ui %}
+<section class="qr-preview-section" id="full-navigation" aria-labelledby="full-navigation-title">
+  <h2 id="full-navigation-title">Navegação configurável</h2>
+  <p class="form-text">Os links abaixo apontam para exemplos deste catálogo. As futuras views devem fornecer somente destinos autorizados.</p>
+  <div class="qr-card">{% include 'ui/navigation.html' with items=navigation_demo active='chamados' label='Seções de demonstração' only %}</div>
+</section>
+<section class="qr-preview-section" id="full-tags" aria-labelledby="full-tags-title">
+  <h2 id="full-tags-title">Tags, triagem e seleção local de foto</h2>
+  <form class="qr-card qr-stack" data-component-demo>
+    {% include 'ui/tag_selector.html' with field=components_form.tags minimum=1 maximum=3 only %}
+    <div class="qr-preview-grid">
+      <div class="qr-stack">
+        {% include 'ui/field.html' with field=components_form.prioridade only %}
+        {% include 'ui/field.html' with field=components_form.responsavel only %}
+        {% include 'ui/field.html' with field=components_form.nota only %}
+      </div>
+      {% include 'ui/photo_input.html' with field=components_form.foto only %}
+    </div>
+    <div class="qr-actions">{% include 'ui/button.html' with type='submit' label='Testar validação local' disabled=True only %}{% include 'ui/button.html' with type='reset' variant='outline-primary' label='Restaurar exemplo' only %}</div>
+    <noscript><p class="form-text">Ative JavaScript para testar a validação local. Esta demonstração não recebe envios.</p></noscript>
+    <p role="status" data-demo-result></p>
+  </form>
+</section>
+<section class="qr-preview-section" id="full-filters" aria-labelledby="full-filters-title">
+  <h2 id="full-filters-title">Filtros e paginação</h2>
+  <p>Filtre oito equipamentos fictícios. Busca, estado, data e paginação funcionam somente sobre estes exemplos.</p>
+  {% include 'ui/filter_bar.html' with form=filter_form action='#full-filters' clear_url='/_ui/#full-filters' only %}
+  <p class="form-text mt-3">{{ demo_page.paginator.count }} resultados</p>
+  {% include 'ui/table.html' with columns=demo_columns rows=demo_rows caption='Resultados fictícios filtrados' empty_title='Nenhum exemplo corresponde aos filtros.' only %}
+  {% ui_pagination demo_page demo_query %}
+</section>
+<section class="qr-preview-section" id="full-reports" aria-labelledby="full-reports-title">
+  <h2 id="full-reports-title">Estados, prioridades e card ampliado</h2>
+  <div class="qr-card qr-stack mb-3">
+    <div class="qr-actions">{% for label, kind in states %}{% include 'ui/badge.html' with label=label kind=kind only %}{% endfor %}</div>
+    <div class="qr-actions">{% for label, kind in priorities %}{% include 'ui/badge.html' with label=label kind=kind only %}{% endfor %}</div>
+    {% include 'ui/metadata.html' with items=metadata_demo only %}
+  </div>
+  {% include 'ui/report_card.html' with report_id='201' problem='Computador não liga' description='Exemplo fictício de descrição.' state='Em atendimento' state_kind='info' priority='Alta' priority_kind='danger' assignee='Sem responsável' opened_at='03/11/2026 09:15' laboratory='Laboratório de exemplo' detail_url='#full-history' readonly=True only %}
+</section>
+<section class="qr-preview-section" id="full-metrics" aria-labelledby="full-metrics-title">
+  <h2 id="full-metrics-title">Indicadores: valor, zero e indisponibilidade</h2>
+  <div class="qr-preview-grid">
+    {% include 'ui/metric_card.html' with label='Relatos válidos' value=0 detail='Zero é um valor disponível.' icon='check' only %}
+    {% include 'ui/metric_card.html' with label='Primeiro atendimento' value=2 unit='h' detail='8 registros com tempo disponível.' icon='clock' only %}
+    {% include 'ui/metric_card.html' with label='Tempo até resolução' value=None detail='Sem registros com tempo disponível.' only %}
+  </div>
+</section>
+<section class="qr-preview-section" id="full-history" aria-labelledby="full-history-title">
+  <h2 id="full-history-title">Histórico, retenção e conferência</h2>
+  <div class="qr-stack">
+    {% include 'ui/table.html' with columns=history_columns rows=history_rows caption='Histórico fictício de alterações' only %}
+    {% include 'ui/alert.html' with kind='warning' title='Remoção prevista: 02/01/2027' text='O prazo é fornecido pelo servidor. A correção de encerramento depende da disponibilidade do conteúdo.' only %}
+    {% include 'ui/alert.html' with title='Conteúdo removido' text='Exemplo do estado de retenção; não apresentar fotos ou descrições descartadas.' only %}
+    {% include 'ui/alert.html' with kind='danger' title='Confira a ação' text='Ações irreversíveis devem apresentar o impacto antes da confirmação.' only %}
+  </div>
+</section>
+<section class="qr-preview-section" id="full-photos" aria-labelledby="full-photos-title">
+  <h2 id="full-photos-title">Anexos: disponível, removido e vazio</h2>
+  <div class="qr-card qr-stack">
+    {% include 'ui/photo_list.html' with photos=photo_demo only %}
+    {% include 'ui/photo_list.html' only %}
+  </div>
+</section>

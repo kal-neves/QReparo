@@ -1,0 +1,3 @@
+<dl class="qr-metadata">
+  {% for item in items %}<div><dt>{{ item.label }}</dt><dd>{{ item.value|default_if_none:'Não registrado nesta versão' }}</dd></div>{% endfor %}
+</dl>

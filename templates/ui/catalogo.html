@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load ui %}
 {% block heading %}
   {% include 'ui/page_heading.html' with title=titulo subtitle='Referência visual de desenvolvimento · dados ilustrativos' icon='monitor' only %}
 {% endblock %}
@@ -53,14 +54,14 @@
   {% include 'ui/empty_state.html' with title='Nenhum equipamento com relatos abertos.' text='Novos relatos aparecerão aqui quando forem enviados.' only %}
 </section>
 <section class="qr-preview-section" aria-labelledby="table-heading">
-  <h2 id="table-heading">Tabela · desktop</h2>
-  <div class="qr-preview-scroll"><div class="qr-preview-desktop">
+  <h2 id="table-heading">Tabela · região rolável por teclado</h2>
+  <div>
     {% include 'ui/table.html' with caption='Exemplo de equipamentos' columns=columns rows=rows only %}
-  </div></div>
+  </div>
 </section>
 <section class="qr-preview-section" aria-labelledby="selection-heading">
-  <h2 id="selection-heading">Cards e seleção · desktop</h2>
-  <div class="qr-preview-scroll"><form data-selection-group id="selection-demo" class="qr-preview-desktop">
+  <h2 id="selection-heading">Cards e seleção</h2>
+  <div><form data-selection-group id="selection-demo">
     <label class="qr-check mb-3" data-select-all-container hidden><input type="checkbox" class="form-check-input" data-select-all>Selecionar todos os relatos abertos</label>
     {% include 'ui/report_card.html' with report_id='101' problem='Não liga' opened_at='20/10/2026 09:15' laboratory='Laboratório 01' description='O computador não liga, mesmo conectado à tomada.' only %}
     {% include 'ui/report_card.html' with report_id='102' problem='Sem conexão de rede' opened_at='20/10/2026 09:30' laboratory='Laboratório 01' description='' only %}
@@ -68,6 +69,7 @@
   </form></div>
   <p id="preview-result" class="form-text" role="status"></p>
 </section>
+{% include 'ui/catalogo_completo.html' %}
 {% endblock %}
 {% block extra_scripts %}
 <script>
@@ -77,5 +79,14 @@
   });
   // O exemplo de validação não deve roubar o foco na abertura do catálogo.
   document.querySelector('[data-error-summary]')?.removeAttribute('data-error-summary');
+  document.querySelectorAll('form[data-component-demo]').forEach(form => {
+    form.querySelector('button[type="submit"]').disabled = false;
+    form.addEventListener('reset', () => { form.querySelector('[data-demo-result]').textContent = ''; });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      form.querySelector('[data-demo-result]').textContent = 'Demonstração validada localmente. Nenhum dado foi enviado ou salvo.';
+    });
+  });
+  document.querySelectorAll('[data-error-summary]').forEach(summary => summary.removeAttribute('data-error-summary'));
 </script>
 {% endblock %}

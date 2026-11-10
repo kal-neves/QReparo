@@ -1,0 +1,5 @@
+<div class="qr-card qr-metric">
+  {% if icon %}<span class="qr-icon-disc">{% include 'ui/icon.html' with name=icon only %}</span>{% endif %}
+  <dl><dt>{{ label }}</dt><dd>{{ value|default_if_none:'Indisponível' }}{% if unit and value != None %} <span>{{ unit }}</span>{% endif %}</dd></dl>
+  {% if detail %}<p class="form-text">{{ detail }}</p>{% endif %}
+</div>

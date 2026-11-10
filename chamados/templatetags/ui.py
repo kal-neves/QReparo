@@ -4,6 +4,18 @@ from django.forms import CheckboxInput, Select
 register = template.Library()
 
 
+@register.inclusion_tag('ui/pagination.html')
+def ui_pagination(page, query, parameter='page', label='Paginação'):
+    """Mantém parâmetros multivalorados; a view fornece uma Page já autorizada."""
+    def link(number):
+        params = query.copy()
+        params[parameter] = number
+        return '?' + params.urlencode()
+    return {'page': page, 'label': label,
+            'previous_url': link(page.previous_page_number()) if page.has_previous() else '',
+            'next_url': link(page.next_page_number()) if page.has_next() else ''}
+
+
 @register.filter
 def ui_control(field):
     """Estiliza BoundField sem alterar o widget compartilhado entre renderizações."""

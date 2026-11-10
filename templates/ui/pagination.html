@@ -1,0 +1,5 @@
+{% if page.paginator.num_pages > 1 %}<nav class="qr-pagination" aria-label="{{ label|default:'Paginação' }}">
+  {% if previous_url %}<a class="btn btn-outline-primary" href="{{ previous_url }}">Anterior</a>{% else %}<span class="btn btn-outline-primary disabled" aria-disabled="true">Anterior</span>{% endif %}
+  <span aria-current="page">Página {{ page.number }} de {{ page.paginator.num_pages }}</span>
+  {% if next_url %}<a class="btn btn-outline-primary" href="{{ next_url }}">Próxima</a>{% else %}<span class="btn btn-outline-primary disabled" aria-disabled="true">Próxima</span>{% endif %}
+</nav>{% endif %}

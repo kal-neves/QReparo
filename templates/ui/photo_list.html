@@ -1,0 +1,6 @@
+<div class="qr-photo-list">
+  {% for photo in photos %}<figure class="qr-photo-tile">
+    {% if photo.url %}<a href="{{ photo.url }}">{% if photo.thumbnail %}<img src="{{ photo.thumbnail }}" alt="{{ photo.label }}" loading="lazy">{% endif %}<span>{{ photo.label }}</span></a>{% else %}<p>{{ photo.label }} — indisponível</p>{% endif %}
+    {% if photo.caption %}<figcaption class="form-text">{{ photo.caption }}</figcaption>{% endif %}
+  </figure>{% empty %}<p class="qr-muted">{{ empty_text|default:'Nenhuma foto enviada.' }}</p>{% endfor %}
+</div>

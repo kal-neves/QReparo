@@ -1,0 +1,7 @@
+<fieldset class="qr-field qr-tags" data-tag-selector data-min="{{ minimum|default:1 }}" data-max="{{ maximum|default:3 }}" aria-describedby="{{ field.auto_id }}_helptext {{ field.auto_id }}_status{% if field.errors %} {{ field.auto_id }}_errors{% endif %}"{% if field.errors %} aria-invalid="true"{% endif %}>
+  <legend class="form-label">{{ field.label }} {% if field.field.required %}<span class="qr-required">(obrigatório)</span>{% endif %}</legend>
+  <div id="{{ field.auto_id }}_helptext" class="form-text mb-2">Selecione de {{ minimum|default:1 }} a {{ maximum|default:3 }} opções. {{ field.help_text }}</div>
+  <div class="qr-tag-options">{% for option in field %}<label class="qr-check qr-tag-option" for="{{ option.id_for_label }}">{{ option.tag }}<span>{{ option.choice_label }}</span></label>{% endfor %}</div>
+  <p id="{{ field.auto_id }}_status" class="form-text" data-tag-status role="status"></p>
+  {% if field.errors %}<ul id="{{ field.auto_id }}_errors" class="invalid-feedback d-block">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+</fieldset>

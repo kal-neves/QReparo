@@ -1,0 +1,6 @@
+<form class="qr-card qr-filter-bar" method="get" action="{{ action }}" aria-label="{{ label|default:'Filtros' }}">
+  {% for name, value in preserved.items %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}
+  {% if form.errors %}{% include 'ui/error_summary.html' with form=form only %}{% endif %}
+  <div class="qr-filter-fields">{% for field in form %}{% include 'ui/field.html' with field=field only %}{% endfor %}</div>
+  <div class="qr-actions">{% include 'ui/button.html' with type='submit' label=submit_label|default:'Aplicar filtros' only %}{% if clear_url %}<a class="btn btn-outline-primary" href="{{ clear_url }}">{{ clear_label|default:'Limpar filtros' }}</a>{% endif %}</div>
+</form>

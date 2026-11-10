@@ -1,0 +1,3 @@
+<nav class="qr-nav" aria-label="{{ label|default:'Principal' }}">
+  {% for item in items %}<a href="{{ item.url }}"{% if item.key == active %} aria-current="page"{% endif %}>{% if item.icon %}{% include 'ui/icon.html' with name=item.icon only %}{% endif %}{{ item.label }}</a>{% endfor %}
+</nav>

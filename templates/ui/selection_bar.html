@@ -1,4 +1,5 @@
 <div class="qr-card qr-selection-bar">
   <span data-selection-count aria-live="polite" hidden></span>
-  <button class="btn btn-primary" type="{{ button_type|default:'submit' }}" data-requires-selection>{% include "ui/icon.html" with name="check" only %}Conferir resolução</button>
+  {% if help_text %}<span class="form-text">{{ help_text }}</span>{% endif %}
+  <button class="btn btn-primary" type="{{ button_type|default:'submit' }}" data-requires-selection>{% include "ui/icon.html" with name="check" only %}{{ label|default:'Conferir resolução' }}</button>
 </div>

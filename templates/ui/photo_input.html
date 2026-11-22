@@ -1,6 +1,7 @@
-<div class="qr-photo-input qr-stack" data-photo-input data-max-bytes="{{ max_bytes|default:10485760 }}">
+<div class="qr-photo-input qr-stack" data-photo-input data-max-bytes="{{ max_bytes|default:10000000 }}">
   {% include 'ui/field.html' with field=field only %}
-  <p class="form-text" data-photo-status role="status"></p>
-  <img class="qr-photo-preview" data-photo-preview alt="Prévia local da foto selecionada" hidden>
+  <p id="{{ field.auto_id }}_photo_status" class="form-text" data-photo-status role="status"></p>
+  {% if camera %}<button class="btn btn-outline-primary" type="button" data-photo-camera hidden>Tirar foto<span class="visually-hidden"> — {{ field.label }}</span></button><p class="form-text">No celular, use a câmera ou selecione uma foto existente. As opções dependem do navegador.</p>{% endif %}
+  <img class="qr-photo-preview" data-photo-preview alt="Prévia local — {{ field.label }}" hidden>
   <button class="btn btn-outline-primary" type="button" data-photo-remove hidden>Remover seleção<span class="visually-hidden"> — {{ field.label }}</span></button>
 </div>

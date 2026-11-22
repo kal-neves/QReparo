@@ -1,8 +1,9 @@
 .qr-work-back { padding-left: 0; margin-bottom: 24px; }
-.qr-work-actions { display: flex; justify-content: flex-end; align-items: center; gap: 20px; }
+.qr-work-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 20px; }
 .qr-recovery { text-align: center; }
 .qr-recovery p { font-weight: 600; }
 .qr-review .qr-table { table-layout: fixed; }
+.qr-review .qr-table { min-width: 700px; }
 .qr-review .qr-table th, .qr-review .qr-table td { overflow-wrap: anywhere; }
 .qr-review .qr-table th:nth-child(1) { width: 9%; }
 .qr-review .qr-table th:nth-child(2) { width: 17%; }

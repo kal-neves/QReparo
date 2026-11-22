@@ -13,7 +13,7 @@ class ComponentsForm(forms.Form):
         widget=forms.CheckboxSelectMultiple)
     foto = forms.FileField(label='Foto 1', required=False,
         help_text='PNG, JPEG ou HEIC, até 10 MB. A demonstração não envia arquivos.',
-        widget=forms.FileInput(attrs={'accept': '.png,.jpg,.jpeg,.heic'}))
+        widget=forms.FileInput(attrs={'accept': 'image/png,image/jpeg,image/heic,.png,.jpg,.jpeg,.heic'}))
     prioridade = forms.ChoiceField(label='Prioridade', choices=[(x, x) for x in ['Baixa', 'Média', 'Alta', 'Crítica']])
     responsavel = forms.ChoiceField(label='Responsável', required=False,
         choices=[('', 'Sem responsável'), ('exemplo', 'Técnico de exemplo')])

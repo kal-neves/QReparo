@@ -1,6 +1,8 @@
 # Fotos de relatos: contrato do back-end
 
-Suporte incremental de fotos sobre o fluxo atual de relatos. As telas de seleção, captura pela câmera e visualização serão integradas posteriormente. O servidor recebe o arquivo produzido pelo navegador; não controla a câmera.
+Suporte incremental de fotos sobre o fluxo atual de relatos, integrado ao formulário público, aos relatos do equipamento e à conferência técnica. O servidor recebe o arquivo produzido pelo navegador; não controla a câmera.
+
+O formulário oferece duas fotos opcionais, prévia local e captura quando suportada pelo navegador. Após erro de envio, é necessário selecionar novamente os arquivos. O técnico vê miniaturas horizontais e abre a imagem em lightbox, com fechamento por botão, Esc ou clique externo. Sem JavaScript, o link abre a página protegida `/tecnico/relatos/<id>/fotos/<uuid>/`.
 
 ## Envio
 

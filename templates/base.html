@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ titulo|default:"QReparo" }}{% endblock %} · QReparo</title>
   <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}">
-  <script src="{% static 'js/ui.js' %}" defer></script>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20261122-lightbox">
+  <script src="{% static 'js/ui.js' %}?v=20261122-lightbox" defer></script>
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% if internal or desktop %}qr-desktop{% else %}qr-public{% endif %}{% endblock %}">

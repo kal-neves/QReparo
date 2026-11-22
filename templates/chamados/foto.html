@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block body_class %}qr-public{% endblock %}
+{% block heading %}
+  <a class="btn btn-link mb-3" href="{{ back_url }}">{% include 'ui/icon.html' with name='arrow-left' only %}Voltar aos relatos</a>
+  {% include 'ui/page_heading.html' with title=titulo only %}
+{% endblock %}
+{% block content %}
+  <div class="qr-card">
+    {% if disponivel %}
+      <img class="qr-photo-full" src="{{ foto.get_absolute_url }}" alt="{{ titulo }}" data-private-photo>
+      <p role="status" data-photo-unavailable hidden>Foto indisponível. O relato pode ter sido resolvido. Volte aos relatos para conferir.</p>
+    {% else %}{% include 'ui/alert.html' with kind='warning' text='Esta foto não está mais disponível. Volte aos relatos para conferir.' only %}{% endif %}
+  </div>
+{% endblock %}

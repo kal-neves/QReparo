@@ -149,6 +149,6 @@ Use uma conta PostgreSQL de desenvolvimento com permissão para criar bancos. O 
 
 ## Documentação
 
-O back-end aceita até duas fotos opcionais por relato e permite sua consulta autenticada pelo técnico. A integração das telas será feita posteriormente. Consulte o [contrato de fotos](instrucoes/MVPcompleto/FOTOS_BACKEND.md) para envio multipart, limites, armazenamento privado, migração e descarte.
+O formulário aceita até duas fotos opcionais por relato, com seleção de arquivo ou captura quando suportada pelo navegador. O técnico consulta miniaturas nos relatos e na conferência, com ampliação em lightbox. Consulte o [contrato de fotos](instrucoes/MVPcompleto/FOTOS_BACKEND.md) para envio multipart, limites, armazenamento privado, migração e descarte.
 
 Consulte a [documentação do projeto](instrucoes/README.md) e a [ordem de desenvolvimento](instrucoes/ORDEM_DE_DESENVOLVIMENTO.md) para conhecer o escopo e a sequência de entregas.

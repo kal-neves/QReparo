@@ -90,7 +90,15 @@
     const status = group.querySelector('[data-photo-status]');
     const remove = group.querySelector('[data-photo-remove]');
     if (!input) return;
+    input.setAttribute('aria-describedby', [input.getAttribute('aria-describedby'), status.id].filter(Boolean).join(' '));
     let objectUrl;
+    const camera = group.querySelector('[data-photo-camera]');
+    if (camera) {
+      camera.hidden = false;
+      camera.addEventListener('click', () => { input.setAttribute('capture', 'environment'); input.click(); });
+      input.addEventListener('pointerdown', () => input.removeAttribute('capture'));
+      input.addEventListener('keydown', () => input.removeAttribute('capture'));
+    }
     const release = () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
       objectUrl = null;
@@ -109,12 +117,7 @@
         input.setCustomValidity(status.textContent);
         return;
       }
-      if (!/\.(png|jpe?g|heic)$/i.test(file.name)) {
-        status.textContent = 'Selecione uma foto PNG, JPEG ou HEIC.';
-        input.setCustomValidity(status.textContent);
-        return;
-      }
-      status.textContent = `${file.name} — ${(file.size / 1048576).toFixed(1)} MB. Selecionada apenas neste navegador.`;
+      status.textContent = `${file.name} — ${(file.size / 1000000).toFixed(1)} MB. Selecionada apenas neste navegador.`;
       if (/\.heic$/i.test(file.name)) {
         status.textContent += ' Prévia HEIC indisponível; o servidor validará a imagem no envio.';
         return;
@@ -134,5 +137,69 @@
     window.addEventListener('pageshow', update);
     update();
   });
+  document.querySelectorAll('[data-private-photo]').forEach((img) => {
+    const unavailable = () => {
+      img.hidden = true;
+      const message = img.parentElement.querySelector('[data-photo-unavailable]');
+      if (message) message.hidden = false;
+    };
+    img.addEventListener('error', unavailable);
+    if (img.complete && img.naturalWidth === 0) unavailable();
+  });
+  const photoLinks = document.querySelectorAll('[data-photo-lightbox]');
+  if (photoLinks.length && typeof HTMLDialogElement !== 'undefined' && HTMLDialogElement.prototype.showModal) {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'qr-photo-lightbox';
+    dialog.setAttribute('aria-label', 'Visualização da foto');
+    const header = document.createElement('div');
+    header.className = 'qr-photo-lightbox-header';
+    const title = document.createElement('h2');
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'btn btn-outline-primary';
+    close.textContent = 'Fechar';
+    close.autofocus = true;
+    const image = document.createElement('img');
+    image.className = 'qr-photo-lightbox-image';
+    const status = document.createElement('p');
+    status.setAttribute('role', 'status');
+    header.append(title, close);
+    dialog.append(header, image, status);
+    document.body.append(dialog);
+    let opener;
+    photoLinks.forEach(link => {
+      link.setAttribute('aria-haspopup', 'dialog');
+      link.addEventListener('click', event => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        opener = link;
+        title.textContent = link.dataset.photoLabel || 'Foto do relato';
+        image.alt = title.textContent;
+        image.hidden = true;
+        status.textContent = 'Carregando foto…';
+        status.hidden = false;
+        dialog.showModal();
+        document.body.classList.add('qr-lightbox-open');
+        image.src = link.dataset.photoLightbox;
+      });
+    });
+    image.addEventListener('load', () => { image.hidden = false; status.hidden = true; });
+    image.addEventListener('error', () => {
+      image.hidden = true;
+      status.textContent = 'Foto indisponível. Feche e atualize os relatos para conferir.';
+      status.hidden = false;
+    });
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => {
+      const bounds = dialog.getBoundingClientRect();
+      if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right ||
+          event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      image.removeAttribute('src');
+      document.body.classList.remove('qr-lightbox-open');
+      opener?.focus();
+    });
+  }
   document.querySelector("[data-error-summary]")?.focus();
 })();

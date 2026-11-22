@@ -17,4 +17,8 @@
     {% if detail_url %}<a href="{{ detail_url }}">Ver detalhes<span class="visually-hidden"> — relato {{ report_id }}</span></a>{% endif %}
   </div>{% endif %}
   <div class="qr-report-description"><span class="qr-meta-label">Descrição</span><p>{{ description|default:"Sem descrição adicional"|linebreaksbr }}</p></div>
+  {% if show_photos %}<section class="mt-4" aria-label="Fotos do relato {{ report_id }}">
+    <h3>Fotos</h3>
+    {% include 'ui/photo_list.html' with photos=photos only %}
+  </section>{% endif %}
 </article>

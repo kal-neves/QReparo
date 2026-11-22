@@ -7,7 +7,7 @@ Catálogo de desenvolvimento: `/_ui/` (somente DEBUG). Includes usam valores esc
 | Include/tag | Propriedades | Comportamento |
 | --- | --- | --- |
 | `tag_selector.html` | `field` (BoundField de MultipleChoiceField com CheckboxSelectMultiple), `minimum=1`, `maximum=3` | Fieldset, erros, escolhas preservadas, contador e limite local. IDs vêm do prefixo do formulário. |
-| `photo_input.html` | `field` (FileField com FileInput), `max_bytes=10485760` | Seleção nativa, prévia PNG/JPEG, indicação HEIC, remoção e validação local de tamanho/extensão. Configure `accept` e ajuda no widget/campo. |
+| `photo_input.html` | `field` (FileField com FileInput), `max_bytes=10000000`, `camera=False` | Seleção nativa, prévia PNG/JPEG, indicação HEIC, remoção e validação local de tamanho. `camera=True` oferece captura quando suportada pelo navegador. Configure `accept` e ajuda no widget/campo. A extensão não substitui a validação real do servidor. |
 | `photo_list.html` | `photos`: lista de `{label, url, thumbnail?, caption?}`, `empty_text` | Miniatura/link, indisponibilidade sem imagem quebrada e estado vazio. URLs de fotos reais devem exigir autorização também no servidor. |
 | `filter_bar.html` | `form`, `action`, `clear_url`, `label`, `submit_label`, `clear_label`, `preserved` (dicionário opcional) | Formulário GET com campos existentes; limpar usa URL fornecida. Não aninhar em outro form. |
 | `ui_pagination` | `page`, `query` (QueryDict), `parameter='page'`, `label` | Tag que inclui `pagination.html`; preserva filtros multivalorados, limites e página atual. Não renderiza em página única. |
@@ -40,4 +40,12 @@ O formulário que envia arquivos precisa de `method="post"`, `enctype="multipart
 
 Mantidos logo SVG real, Segoe UI/system-ui, verde `--qr-green`, menta `--qr-mint`, fundo `--qr-bg`, borda `--qr-border`, raio e sombra existentes. Sem gradientes ou novas versões da marca dos protótipos. Estados usam as cores semânticas dos alertas existentes. Botões mantêm altura mínima de 44 px; campos, 48 px. Espaçamento de 8/12/16/20/24 px e layouts com quebra substituem larguras rígidas dos protótipos. O catálogo não exige largura desktop; tabelas extensas rolam dentro de uma região própria.
 
-As demonstrações usam fixtures independentes do banco. Filtros e paginação são GET; a demonstração de tags/foto valida no navegador e não salva dados. Nenhuma tela completa ou rota de atendimento da evolução foi implementada nesta etapa.
+As demonstrações usam fixtures independentes do banco. Filtros e paginação são GET; a demonstração de tags/foto valida no navegador e não salva dados.
+
+## Integração incremental de fotos
+
+O formulário público utiliza duas instâncias de `photo_input`, ambas com `name="fotos"` e IDs distintos, dentro de um POST multipart com CSRF. Continua usando problema único e descrição conforme o contrato atual. Enviar sem fotos permanece permitido e funciona sem JavaScript. Depois de erro no servidor, os textos são preservados e o usuário é orientado a selecionar novamente os arquivos (o navegador não repopula inputs de arquivo).
+
+Os cards técnicos e a conferência reutilizam `photo_list`; a propriedade `show_photos` do card habilita a seção, e `photos` recebe a lista. Miniaturas apontam para a rota privada de bytes. As miniaturas de 96 × 72 px ficam em faixa horizontal. Com JavaScript, o clique abre um lightbox nativo sobre os relatos, com botão Fechar, Esc, clique fora e retorno do foco à miniatura. Sem JavaScript, o link abre a página protegida `/tecnico/relatos/<id>/fotos/<uuid>/`, com retorno aos relatos. Não usar `.arquivo.url` ou rotas estáticas para anexos reais. Falha no carregamento mostra aviso em vez de miniatura quebrada com JavaScript; sem JavaScript permanece o texto alternativo e o link.
+
+A conferência informa descarte imediato de texto e fotos, conforme o ciclo atual do MVP. Sem antecipar retenção de 60/14 dias. Não há fotos na confirmação pública nem nos indicadores. Prévias: `/_ui/?tela=relato`, `/_ui/?tela=relato&estado=foto-erro` e `/_ui/?tela=relatos` (ilustração pública fictícia).

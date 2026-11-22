@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 from equipamentos.models import Equipamento
 from .models import Chamado, Foto, Tag
 from .fotos import arquivos_do_envio
-from .forms import RelatoForm
+from .forms import RelatoForm, campos_fotos
 from .servicos import criar_relato
 
 
@@ -28,6 +28,8 @@ def novo_relato(request, token):
         return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'inativo'}, status=403)
     form = RelatoForm(request.POST if request.method == 'POST' else None)
     contexto['form'] = form
+    contexto['photo_fields'] = campos_fotos()
+    contexto['photos_reselect'] = request.method == 'POST' and bool(request.FILES)
     if not form.fields['problema'].queryset.exists():
         return render(request, 'chamados/novo.html', {**contexto, 'estado_visual': 'sem-opcoes'}, status=503)
     if request.method == 'POST' and form.is_valid():

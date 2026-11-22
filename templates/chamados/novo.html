@@ -24,11 +24,17 @@
       {% if estado_visual == 'sem-opcoes' %}
         {% include 'ui/alert.html' with kind='warning' text='O registro de problemas está indisponível no momento. Tente novamente mais tarde.' only %}
       {% else %}
-        {% if not preview_visual %}<form method="post" action="{% url 'paginas:relato' equipamento.qr_token %}">{% csrf_token %}{% endif %}
+        {% if not preview_visual %}<form method="post" enctype="multipart/form-data" action="{% url 'paginas:relato' equipamento.qr_token %}">{% csrf_token %}{% endif %}
         <section class="qr-card" aria-label="Informações do problema" data-report-fields>
           {% include 'ui/error_summary.html' with form=form only %}
           {% include 'ui/field.html' with field=form.problema only %}
           {% include 'ui/field.html' with field=form.descricao counter=True only %}
+          {% if photo_fields %}<section class="qr-stack mt-4" aria-labelledby="fotos-heading">
+            <h2 id="fotos-heading">Fotos (opcionais)</h2>
+            <p class="form-text">Até duas fotos do problema. Evite rostos, documentos e outros dados pessoais. Envio completo: até 25 MB.</p>
+            {% if photos_reselect %}{% include 'ui/alert.html' with kind='warning' text='O relato não foi enviado. Seus campos de texto foram mantidos; selecione novamente as fotos antes de tentar outra vez.' only %}{% endif %}
+            {% for field in photo_fields %}{% include 'ui/photo_input.html' with field=field camera=True only %}{% endfor %}
+          </section>{% endif %}
           <div class="mt-4" data-report-action>
             {% if preview_visual %}
               {% include 'ui/button.html' with label='Enviar relato' icon='send' extra_class='w-100' only %}

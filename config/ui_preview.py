@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.templatetags.static import static
 from django.views.decorators.http import require_safe
 from .ui_components import components_context
+from chamados.forms import campos_fotos
 
 
 class ExampleForm(forms.Form):
@@ -40,6 +41,7 @@ def report_preview(request):
     return render(request, 'chamados/novo.html', {
         'titulo': 'Registrar problema', 'preview_visual': True,
         'internal': False, 'desktop': False, 'form': form,
+        'photo_fields': campos_fotos(), 'photos_reselect': estado == 'foto-erro',
         'estado_visual': estado,
         'equipamento': {'codigo_patrimonio': 'PC-01', 'nome': 'Computador Lenovo',
             'descricao': 'Computador de uso acadêmico',
@@ -116,7 +118,11 @@ def preview(request):
         estado = request.GET.get('estado', '')
         reports = [
             {'id': 101, 'problem': 'Não liga', 'opened_at': '09/10/2026 09:15',
-             'laboratory': 'Lab. 01 — Informática', 'description': 'O computador não liga, mesmo conectado à tomada.'},
+             'laboratory': 'Lab. 01 — Informática', 'description': 'O computador não liga, mesmo conectado à tomada.',
+             'photos': [{'label': 'Abrir ilustração de exemplo',
+                         'url': static('brand/QReparo_logo_noSign_horizontal.svg'),
+                         'thumbnail': static('brand/QReparo_logo_noSign_horizontal.svg'),
+                         'caption': 'Ilustração pública de demonstração; não é um anexo real.'}]},
             {'id': 102, 'problem': 'Teclado/mouse', 'opened_at': '10/10/2026 10:30',
              'laboratory': 'Lab. 01 — Informática', 'description': ''},
             {'id': 103, 'problem': 'Outro problema', 'opened_at': '11/10/2026 14:00',

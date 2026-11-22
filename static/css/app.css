@@ -147,10 +147,21 @@ textarea.form-control { min-height: 132px; resize: vertical; }
 .qr-tag-option input { width: 22px; height: 22px; flex-shrink: 0; accent-color: var(--qr-green); }
 .qr-photo-input { padding: 20px; border: 1px dashed var(--qr-border); border-radius: var(--qr-radius); min-width: 0; }
 .qr-photo-preview { display: block; max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 9px; }
-.qr-photo-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 20px; }
-.qr-photo-tile { margin: 0; min-width: 0; overflow-wrap: anywhere; }
-.qr-photo-tile a { display: flex; flex-direction: column; gap: 12px; }
-.qr-photo-tile img { width: 100%; height: 180px; object-fit: contain; border-radius: 9px; background: var(--qr-bg); }
+.qr-photo-full { display: block; width: 100%; max-height: 80vh; object-fit: contain; }
+.qr-photo-list { display: flex; gap: 12px; overflow-x: auto; padding: 4px; }
+.qr-photo-tile { flex: 0 0 96px; margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.qr-photo-tile a { display: block; border-radius: 9px; }
+.qr-photo-tile a:focus-visible { outline: 3px solid var(--qr-green); outline-offset: 2px; }
+.qr-photo-tile img { display: block; width: 96px; height: 72px; object-fit: cover; border: 1px solid var(--qr-border); border-radius: 9px; background: var(--qr-bg); }
+.qr-photo-tile img[hidden] { display: none; }
+.qr-photo-lightbox { width: min(960px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); padding: 20px; border: 1px solid var(--qr-border); border-radius: var(--qr-radius); background: white; color: var(--qr-ink); }
+.qr-photo-lightbox::backdrop { background: rgb(0 0 0 / 72%); }
+.qr-photo-lightbox[open] { display: grid; gap: 16px; }
+.qr-photo-lightbox-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.qr-photo-lightbox-header h2 { margin: 0; font-size: 1.125rem; }
+.qr-photo-lightbox-image { display: block; width: 100%; max-height: calc(100dvh - 170px); object-fit: contain; }
+.qr-photo-lightbox [hidden] { display: none; }
+body.qr-lightbox-open { overflow: hidden; }
 .qr-metric dl { margin: 16px 0 0; }
 .qr-metric dt { color: var(--qr-muted); font-weight: 600; }
 .qr-metric dd { margin: 8px 0 0; font-size: 2rem; font-weight: 700; color: var(--qr-green); overflow-wrap: anywhere; }

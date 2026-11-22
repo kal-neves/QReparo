@@ -96,6 +96,64 @@ class FotoTests(TestCase):
     def test_envio_sem_foto_continua_funcionando(self):
         self.assertEqual(self.criar([]).fotos.count(), 0)
 
+    def test_formulario_publico_renderiza_dois_campos_multipart_e_reselecao(self):
+        resposta = self.client.get(self.url)
+        self.assertContains(resposta, 'enctype="multipart/form-data"')
+        self.assertContains(resposta, 'name="fotos"', count=2)
+        self.assertContains(resposta, 'id="id_foto1_fotos"')
+        self.assertContains(resposta, 'id="id_foto2_fotos"')
+        self.assertContains(resposta, 'data-max-bytes="10000000"', count=2)
+        self.assertContains(resposta, 'data-photo-camera', count=2)
+        resposta = self.client.post(self.url, {'problema': self.problema.pk,
+            'descricao': 'Texto preservado', 'fotos': SimpleUploadedFile('falsa.png', b'falso')})
+        self.assertContains(resposta, 'Texto preservado')
+        self.assertContains(resposta, 'selecione novamente as fotos')
+        self.assertNotContains(resposta, '/tecnico/relatos/')
+
+    def test_telas_tecnicas_exibem_fotos_privadas_e_aviso_de_descarte(self):
+        relato = self.criar()
+        foto = relato.fotos.get()
+        pagina = reverse('paginas:foto_relato', args=[relato.pk, foto.pk])
+        self.client.force_login(self.tecnico)
+        resposta = self.client.get(reverse('paginas:relatos_equipamento', args=[self.equipamento.pk]))
+        self.assertContains(resposta, foto.get_absolute_url())
+        self.assertContains(resposta, pagina)
+        resposta = self.client.get(pagina)
+        self.assertContains(resposta, 'Voltar aos relatos')
+        self.assertContains(resposta, foto.get_absolute_url())
+        self.assertIn('no-store', resposta['Cache-Control'])
+        resposta = self.client.post(reverse('paginas:conferencia', args=[self.equipamento.pk]),
+                                   {'selecionados': [relato.pk]})
+        self.assertContains(resposta, pagina)
+        self.assertContains(resposta, 'fotos serão apagadas imediatamente')
+
+    def test_pagina_foto_nao_libera_acesso_por_ser_staff_e_trata_arquivo_ausente(self):
+        relato = self.criar()
+        foto = relato.fotos.get()
+        pagina = reverse('paginas:foto_relato', args=[relato.pk, foto.pk])
+        self.assertEqual(self.client.get(pagina).status_code, 302)
+        staff = get_user_model().objects.create_user('staff_foto', is_staff=True)
+        self.client.force_login(staff)
+        self.assertEqual(self.client.get(pagina).status_code, 403)
+        self.client.force_login(self.tecnico)
+        foto.arquivo.storage.delete(foto.arquivo.name)
+        resposta = self.client.get(pagina)
+        self.assertContains(resposta, 'não está mais disponível', status_code=404)
+        self.assertNotContains(resposta, 'data-private-photo', status_code=404)
+        self.assertEqual(self.client.get(reverse('paginas:foto_relato', args=[relato.pk + 1, foto.pk])).status_code, 404)
+
+    def test_telas_sem_fotos_e_pagina_inacessivel_apos_resolucao(self):
+        sem_foto = self.criar([])
+        relato = self.criar()
+        foto = relato.fotos.get()
+        pagina = reverse('paginas:foto_relato', args=[relato.pk, foto.pk])
+        self.client.force_login(self.tecnico)
+        resposta = self.client.get(reverse('paginas:relatos_equipamento', args=[self.equipamento.pk]))
+        self.assertContains(resposta, 'Nenhuma foto enviada.')
+        with self.captureOnCommitCallbacks(execute=True):
+            resolver_selecionados(usuario=self.tecnico, equipamento_id=self.equipamento.pk, ids=[relato.pk])
+        self.assertEqual(self.client.get(pagina).status_code, 404)
+
     def test_rejeita_tres_fotos_arquivo_falso_formato_invalido_e_truncado(self):
         invalido = SimpleUploadedFile('foto.png', b'<script>conteudo</script>', 'image/png')
         truncado = imagem()

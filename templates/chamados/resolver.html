@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Conferir resolução{% endblock %}
-{% block body_class %}qr-desktop{% endblock %}
+{% block body_class %}qr-responsive{% endblock %}
 {% block extra_head %}<link rel="stylesheet" href="{% static 'css/tecnico.css' %}">{% endblock %}
 {% block header %}{% if backend_connected %}{% include 'ui/header.html' with internal=True active_nav='painel' %}{% else %}{% include 'ui/header.html' with internal=True active_nav='painel' navigation_static=True %}{% endif %}{% endblock %}
 {% block main_class %}qr-width-work qr-review{% endblock %}
@@ -31,7 +31,8 @@
     {% elif rows %}
       <p class="qr-muted">Você selecionou {{ rows|length }} {% if rows|length == 1 %}relato{% else %}relatos{% endif %} deste equipamento.</p>
       {% include 'ui/table.html' with caption='Relatos selecionados para conferência' rows=rows columns=columns multiline_column=3 only %}
-      {% include 'ui/alert.html' with kind='warning' text='Ao confirmar, estes relatos serão marcados como resolvidos e suas descrições serão apagadas. Permanecerão apenas os dados técnicos mínimos para contagem. Esta ação não pode ser desfeita nesta versão.' only %}
+      {% for report in photo_reports %}{% if report.photos %}<section class="qr-card"><h2>Fotos do relato {{ report.id }}</h2>{% include 'ui/photo_list.html' with photos=report.photos only %}</section>{% endif %}{% endfor %}
+      {% include 'ui/alert.html' with kind='warning' text='Ao confirmar, estes relatos serão marcados como resolvidos e suas descrições e fotos serão apagadas imediatamente. Permanecerão apenas os dados técnicos mínimos para contagem. Esta ação não pode ser desfeita nesta versão.' only %}
       {% if backend_connected %}<form method="post" action="{% url 'paginas:resolver' equipamento.pk %}">{% csrf_token %}<input type="hidden" name="selection_token" value="{{ selection_token }}">{% endif %}
       <div class="qr-work-actions">
         {% if backend_connected %}<a href="{% url 'paginas:relatos_equipamento' equipamento.pk %}">Alterar seleção</a>{% else %}{% include 'ui/inert_link.html' with label='Alterar seleção' only %}{% endif %}

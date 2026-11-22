@@ -32,6 +32,22 @@ class RelatoForm(forms.Form):
         return dados
 
 
+class FotoSelecaoForm(forms.Form):
+    """Campos de apresentação; arquivos são validados pelo serviço de fotos."""
+    fotos = forms.FileField(required=False, widget=forms.FileInput(attrs={
+        'accept': 'image/png,image/jpeg,image/heic,.png,.jpg,.jpeg,.heic',
+    }), help_text='PNG, JPEG ou HEIC. Até 10 MB (10.000.000 bytes).')
+
+
+def campos_fotos():
+    campos = []
+    for posicao in (1, 2):
+        form = FotoSelecaoForm(auto_id=f'id_foto{posicao}_%s')
+        form.fields['fotos'].label = f'Foto {posicao}'
+        campos.append(form['fotos'])
+    return campos
+
+
 class SelecaoResolucaoForm(forms.Form):
     def clean(self):
         dados = super().clean()

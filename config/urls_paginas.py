@@ -16,6 +16,7 @@ urlpatterns = [
     path('entrar/', EntradaView.as_view(), name='entrada'),
     path('sair/', LogoutView.as_view(), name='saida'),
     path('tecnico/', atendimento.painel, name='painel'),
+    path('tecnico/relatos/<int:pk>/fotos/<uuid:foto_id>/', atendimento.visualizar_foto, name='foto_relato'),
     path('tecnico/equipamentos/<int:pk>/', atendimento.detalhe, name='relatos_equipamento'),
     path('tecnico/equipamentos/<int:pk>/conferencia/', atendimento.conferencia, name='conferencia'),
     path('tecnico/equipamentos/<int:pk>/resolver/', atendimento.resolver, name='resolver'),

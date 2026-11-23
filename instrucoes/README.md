@@ -4,6 +4,8 @@ A entrega prioritária é o MVP fácil. A evolução completa começa depois que
 
 ## Documentos por fase
 
+Operação: [hospedagem temporária no Railway](HOSPEDAGEM_RAILWAY.md), incluindo volume privado, verificações e recuperação.
+
 | Fase | Escopo | Interface | Arquitetura |
 | --- | --- | --- | --- |
 | MVP fácil | [Resumo](MVPfacil/MVP.txt) | [Telas e fluxo](MVPfacil/TELAS_E_FLUXO.md) | [Arquitetura](MVPfacil/ARQUITETURA.md) |

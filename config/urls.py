@@ -2,12 +2,14 @@ from django.contrib import admin
 from django.conf import settings
 from django.urls import include, path
 from .paginas import inicio
+from .saude import saude
 
 handler403 = 'config.erros.acesso_negado'
 handler404 = 'config.erros.nao_encontrado'
 handler500 = 'config.erros.erro_interno'
 
 urlpatterns = [
+    path('saude/', saude, name='saude'),
     path('admin/', admin.site.urls),
     path('', include('config.urls_paginas')),
     path('equipamentos/', include('equipamentos.urls', namespace='equipamentos')),

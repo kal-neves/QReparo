@@ -1,5 +1,22 @@
 /* Progressive enhancements only: no API requests or persisted form content. */
 (() => {
+  document.querySelectorAll('[data-report-content]').forEach((details) => {
+    const button = details.querySelector('[data-description-toggle]');
+    const description = details.querySelector('[data-report-description]');
+    const placeholder = details.querySelector('[data-description-placeholder]');
+    const initialLabel = button.getAttribute('aria-label');
+    const setVisible = (visible) => {
+      description.hidden = !visible;
+      placeholder.hidden = visible;
+      button.setAttribute('aria-expanded', String(visible));
+      button.setAttribute('aria-label', visible ? initialLabel.replace('Mostrar', 'Ocultar') : initialLabel);
+      button.title = visible ? 'Ocultar descrição' : 'Mostrar descrição';
+    };
+    button.hidden = false;
+    button.addEventListener('click', () => setVisible(description.hidden));
+    details.addEventListener('toggle', () => { if (!details.open) setVisible(false); });
+    window.addEventListener('pageshow', () => { details.open = false; setVisible(false); });
+  });
   const refresh = () => {
     document.querySelectorAll("[data-character-count]").forEach((counter) => {
       const input = document.getElementById(counter.dataset.characterCount);

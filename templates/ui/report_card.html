@@ -16,9 +16,20 @@
     {% if legacy %}{% include 'ui/badge.html' with label='Versão anterior' only %}{% endif %}
     {% if detail_url %}<a href="{{ detail_url }}">Ver detalhes<span class="visually-hidden"> — relato {{ report_id }}</span></a>{% endif %}
   </div>{% endif %}
-  <div class="qr-report-description"><span class="qr-meta-label">Descrição</span><p>{{ description|default:"Sem descrição adicional"|linebreaksbr }}</p></div>
+  {% if protected_content %}<details class="qr-report-content" data-report-content>
+    <summary>Descrição e fotos</summary>
+    <div class="qr-report-description">
+      <div class="qr-description-heading"><span class="qr-meta-label">Descrição</span>
+        <button type="button" class="qr-description-toggle" data-description-toggle aria-controls="descricao-relato-{{ report_id }}" aria-expanded="false" aria-label="Mostrar descrição do relato {{ report_id }}" title="Mostrar descrição" hidden>{% include 'ui/icon.html' with name='eye' only %}</button>
+      </div>
+      <p id="descricao-relato-{{ report_id }}" data-report-description hidden>{{ description|default:"Sem descrição adicional"|linebreaksbr }}</p>
+      <p class="qr-muted" data-description-placeholder>Descrição oculta.</p>
+      <noscript><p>Ative o JavaScript para revelar a descrição.</p></noscript>
+    </div>
+  {% else %}<div class="qr-report-description"><span class="qr-meta-label">Descrição</span><p>{{ description|default:"Sem descrição adicional"|linebreaksbr }}</p></div>{% endif %}
   {% if show_photos %}<section class="mt-4" aria-label="Fotos do relato {{ report_id }}">
     <h3>Fotos</h3>
     {% include 'ui/photo_list.html' with photos=photos only %}
   </section>{% endif %}
+  {% if protected_content %}</details>{% endif %}
 </article>

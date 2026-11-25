@@ -30,6 +30,7 @@ O formulário que envia arquivos precisa de `method="post"`, `enctype="multipart
 
 - `badge.html`: variantes `info`, `warning`, `danger`, além de neutro, `success` e `count`. Sempre informar rótulo textual.
 - `report_card.html`: propriedades opcionais `state`, `state_kind`, `tags` (lista de textos), `priority`, `priority_kind`, `assignee`, `detail_url`, `legacy`; mantém parâmetros anteriores e comportamento de seleção. `readonly=True` omite seleção quando não há `can_resolve`. `problem` também pode receber o título do chamado.
+- `protected_content=True` recolhe descrição/fotos em uma seção expansível, oculta a descrição até acionar o botão de olho e desfoca as miniaturas. Recolher a seção ou retornar à página oculta novamente o texto. Usado na lista de relatos abertos por equipamento. A lightbox abre a foto sem desfoque ao clicar; essa apresentação não constitui moderação nem restrição de acesso aos arquivos.
 - `equipment_card.html`: categoria opcional por `category`; versão compacta quebra em coluna no celular.
 - `selection_bar.html`: `label` e `help_text` opcionais; seleção parcial/contagem reaproveitam o JS existente.
 - `header.html`: `navigation_items` opcionais dentro do header interno; sem essa propriedade preserva navegação atual. A view deve filtrar os links por autorização. O fluxo público ignora essa lista.

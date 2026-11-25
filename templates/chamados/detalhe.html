@@ -28,7 +28,7 @@
       </label>{% endif %}
       <div>
         {% for report in reports %}
-          {% include 'ui/report_card.html' with report_id=report.id problem=report.problem opened_at=report.opened_at laboratory=report.laboratory description=report.description readonly=backend_connected can_resolve=can_resolve photos=report.photos show_photos=True only %}
+          {% include 'ui/report_card.html' with report_id=report.id problem=report.problem opened_at=report.opened_at laboratory=report.laboratory description=report.description readonly=backend_connected can_resolve=can_resolve photos=report.photos show_photos=True protected_content=True only %}
         {% endfor %}
       </div>
       {% if can_resolve %}{% include 'ui/selection_bar.html' with button_type='submit' only %}{% elif not backend_connected %}{% include 'ui/selection_bar.html' with button_type='button' only %}{% endif %}

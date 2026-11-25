@@ -149,6 +149,18 @@ textarea.form-control { min-height: 132px; resize: vertical; }
 .qr-photo-preview { display: block; max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 9px; }
 .qr-photo-full { display: block; width: 100%; max-height: 80vh; object-fit: contain; }
 .qr-photo-list { display: flex; gap: 12px; overflow-x: auto; padding: 4px; }
+.qr-report-content { margin-top: 12px; }
+.qr-report-content > summary { cursor: pointer; color: var(--qr-green); font-weight: 600; padding: 8px 0; }
+.qr-report-content > summary:focus-visible { outline: 3px solid var(--qr-green); outline-offset: 2px; }
+.qr-description-heading { display: flex; align-items: center; gap: 8px; }
+.qr-description-heading .qr-meta-label { margin: 0; }
+.qr-report-content .qr-report-description { padding-left: 0; }
+.qr-description-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 4px; border: 0; background: transparent; color: var(--qr-green); cursor: pointer; line-height: 1; }
+.qr-description-toggle:focus-visible { outline: 2px solid var(--qr-green); outline-offset: 2px; border-radius: 3px; }
+.qr-description-toggle .qr-icon { width: 18px; height: 18px; }
+.qr-report-content [hidden] { display: none !important; }
+.qr-report-content .qr-photo-tile a { overflow: hidden; }
+.qr-report-content .qr-photo-tile img { filter: blur(12px); transform: scale(1.15); }
 .qr-photo-tile { flex: 0 0 96px; margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .qr-photo-tile a { display: block; border-radius: 9px; }
 .qr-photo-tile a:focus-visible { outline: 3px solid var(--qr-green); outline-offset: 2px; }
